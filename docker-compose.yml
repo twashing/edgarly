@@ -1,9 +1,14 @@
 version: '2'
 services:
   app:
-    build: 
-      context: .
+    build: .
+    environment:
+      TWSUSERID: fdemo
+      TWSPASSWORD: demouser
+      VNC_PASSWORD: some_pass123
     image: twashing/edgarly:latest
     ports:
-      - 5900:5900
+      - 4001:4001  # API
+      - 5900:5900  # VNC
     tty: true
+    restart: always

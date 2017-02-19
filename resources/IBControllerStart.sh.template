@@ -19,9 +19,9 @@ TRADING_MODE=
 IBC_PATH=/root/ibcontroller.paper
 TWS_PATH=/root/Jts
 LOG_PATH=/root/ibcontroller.paper/Logs
-TWSUSERID=
-TWSPASSWORD=
-JAVA_PATH=
+TWSUSERID=twash2016
+TWSPASSWORD=ff9vc3dN
+JAVA_PATH=/usr/lib/jvm/java-8-openjdk-amd64/jre/bin
 
 
 #              PLEASE DON'T CHANGE ANYTHING BELOW THIS LINE !!
