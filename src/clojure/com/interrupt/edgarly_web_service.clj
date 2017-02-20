@@ -2,10 +2,10 @@
   (:require [clojure.tools.logging :as log]
             [compojure.core :as compojure]
             [com.interrupt.edgarly-web-core :as core]
-            [puppetlabs.trapperkeeper.core :as trapperkeeper]
+            [puppetlabs.trapperkeeper.core :refer [defservice]]
             [puppetlabs.trapperkeeper.services :as tk-services]))
 
-(trapperkeeper/defservice hello-web-service
+(defservice hello-web-service
   [[:ConfigService get-in-config]
    [:WebroutingService add-ring-handler get-route]
    HelloService]

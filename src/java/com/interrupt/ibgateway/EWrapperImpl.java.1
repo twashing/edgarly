@@ -16,7 +16,7 @@ import com.ib.client.OrderState;
 import com.ib.client.ContractDetails;
 import com.ib.client.Execution;
 import com.ib.client.CommissionReport;
-import com.ib.client.UnderComp;
+// import com.ib.client.UnderComp;
 
 //import edgar.splitter;
 import clojure.lang.RT;
@@ -56,13 +56,14 @@ public class EWrapperImpl implements com.ib.client.EWrapper {
         logger = Logger.getLogger("user");
 
     }
-    
+
     protected void connectToTWS() {
         client.eConnect(TWS_HOST, TWS_PORT, TWS_CLIENT_ID);
     }
     protected void disconnectFromTWS() {
         if (client.isConnected()) client.eDisconnect();
     }
+    protected void connectAck() {}
 
     protected Contract createContract(String symbol, String securityType,
                                       String exchange, String currency) {
@@ -85,7 +86,6 @@ public class EWrapperImpl implements com.ib.client.EWrapper {
 
         return contract;
     }
-
 
 
     /**
@@ -332,8 +332,11 @@ public class EWrapperImpl implements com.ib.client.EWrapper {
     public void accountDownloadEnd(java.lang.String arg1) { logger.debug("..."); }
     public void execDetailsEnd(int arg1) { logger.debug("..."); }
     public void scannerDataEnd(int arg1) { logger.debug("..."); }
-    public void deltaNeutralValidation(int arg1, com.ib.client.UnderComp arg2) { logger.debug("..."); }
+    // public void deltaNeutralValidation(int arg1, com.ib.client.UnderComp arg2) { logger.debug("..."); }
     public void marketDataType(int arg1, int arg2) { logger.debug("..."); }
     public void commissionReport(com.ib.client.CommissionReport commisionReport) { logger.debug("..."); }
+
+    public void displayGroupUpdated(int v1, java.lang.String v2) {}
+    public void displayGroupList(int v1, java.lang.String v2) {}
 
 }

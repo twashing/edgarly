@@ -8,7 +8,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :pedantic? :abort
+  ;; :pedantic? :abort
 
   :dependencies [[org.clojure/clojure "1.8.0"]
 
@@ -22,7 +22,9 @@
                  [compojure "1.5.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [puppetlabs/trapperkeeper ~tk-version]
-                 [puppetlabs/trapperkeeper-webserver-jetty9 ~tk-jetty9-version]]
+                 [puppetlabs/trapperkeeper-webserver-jetty9 ~tk-jetty9-version]
+
+                 [com.interactivebrokers.tws/tws-api "9.72.05"]]
 
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
