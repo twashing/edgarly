@@ -24,6 +24,8 @@
                  [puppetlabs/trapperkeeper ~tk-version]
                  [puppetlabs/trapperkeeper-webserver-jetty9 ~tk-jetty9-version]]
 
+  :source-paths ["src/clojure"]
+  :java-source-paths ["src/java"]
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[puppetlabs/trapperkeeper ~tk-version :classifier "test" :scope "test"]
                                   [puppetlabs/kitchensink ~ks-version :classifier "test" :scope "test"]
@@ -35,6 +37,4 @@
 
   :aliases {"tk" ["trampoline" "run" "--config" "dev-resources/config.conf"]}
 
-  :main puppetlabs.trapperkeeper.main
-
-  )
+  :main puppetlabs.trapperkeeper.main)
