@@ -9,9 +9,9 @@ export DISPLAY=":0.0"
 # run VNC server (note - it has 2 passwords: one for “view only” other for “full access with keyboard and mouse”):
 /usr/bin/x11vnc -ncache 10 -ncache_cr -viewpasswd remote_view_only_pass -passwd some_pass123  -display :0 -forever -shared -logappend /var/log/x11vnc.log -bg -noipv6
 
-# We have to start TWS manually, to configure few things:
-cd ~/Jts/963 &&
-./tws &
+# # We have to start TWS manually, to configure few things:
+# cd ~/Jts/963 &&
+# ./tws &
 
 mv ~/IBControllerStart-paper.sh ~/ibcontroller.paper/IBControllerStart.sh &&
 cd ~/ibcontroller.paper/ &&
