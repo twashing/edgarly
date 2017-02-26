@@ -1,6 +1,6 @@
-(ns com.interrupt.edgarly-service
+(ns com.interrupt.edgarly.service
   (:require [clojure.tools.logging :as log]
-            [com.interrupt.edgarly-core :as core]
+            [com.interrupt.edgarly.core :as core]
             [puppetlabs.trapperkeeper.core :as trapperkeeper]))
 
 (defprotocol HelloService

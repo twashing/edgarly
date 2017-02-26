@@ -1,8 +1,8 @@
-(ns com.interrupt.edgarly-service-test
+(ns com.interrupt.service-test
   (:require [clojure.test :refer :all]
             [puppetlabs.trapperkeeper.app :as app]
             [puppetlabs.trapperkeeper.testutils.bootstrap :refer [with-app-with-empty-config]]
-            [com.interrupt.edgarly-service :as svc]))
+            [com.interrupt.service :as svc]))
 
 (deftest hello-service-test
   (testing "says hello to caller"

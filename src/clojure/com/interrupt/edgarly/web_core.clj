@@ -1,5 +1,5 @@
-(ns com.interrupt.edgarly-web-core
-  (:require [com.interrupt.edgarly-service :as hello-svc]
+(ns com.interrupt.edgarly.web-core
+  (:require [com.interrupt.edgarly.service :as hello-svc]
             [clojure.tools.logging :as log]
             [compojure.core :as compojure]
             [compojure.route :as route]))

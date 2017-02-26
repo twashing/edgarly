@@ -1,7 +1,7 @@
-(ns com.interrupt.edgarly-web-service
+(ns com.interrupt.edgarly.web-service
   (:require [clojure.tools.logging :as log]
             [compojure.core :as compojure]
-            [com.interrupt.edgarly-web-core :as core]
+            [com.interrupt.edgarly.web-core :as core]
             [puppetlabs.trapperkeeper.core :refer [defservice]]
             [puppetlabs.trapperkeeper.services :as tk-services]))
 

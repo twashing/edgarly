@@ -1,0 +1,29 @@
+FROM ubuntu:16.04
+
+
+MAINTAINER Timothy Washington
+
+
+# Install libs
+# xvfb - Install xvfb - Virtual Framebuffer 'fake' X server 
+# x11vnc - install VNC server on remote Ubuntu (to access TWS GUI remotely)
+RUN apt-get update && \
+    apt-get install -y \
+	    wget \
+	    unzip \
+	    xvfb \
+	    x11vnc \
+	    default-jre \
+	    libwebkit2gtk-4.0-37 \
+	    dos2unix
+
+RUN mkdir ~/ibcontroller.paper && \
+    cd ~/ibcontroller.paper/ && \
+    wget https://github.com/ib-controller/ib-controller/releases/download/3.2.0/IBController-3.2.0.zip && \
+    unzip IBController-3.2.0.zip && \
+    cp -r ~/ibcontroller.paper ~/ibcontroller.real && \
+    cd /tmp/ && \
+    wget https://download2.interactivebrokers.com/installers/tws/latest-standalone/tws-latest-standalone-linux-x64.sh && \
+    chmod +x tws-latest-standalone-linux-x64.sh && \
+    echo "n" | ./tws-latest-standalone-linux-x64.sh && \
+    rm -rf /tmp/* 

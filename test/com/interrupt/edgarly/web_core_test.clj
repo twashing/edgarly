@@ -1,7 +1,7 @@
-(ns com.interrupt.edgarly-web-core-test
+(ns com.interrupt.edgarly.web-core-test
   (:require [clojure.test :refer :all]
-            [com.interrupt.edgarly-service :as hello-svc]
-            [com.interrupt.edgarly-web-core :refer :all]
+            [com.interrupt.edgarly.service :as hello-svc]
+            [com.interrupt.edgarly.web-core :refer :all]
             [ring.mock.request :as mock]))
 
 (deftest hello-web-test

@@ -1,4 +1,4 @@
-(ns com.interrupt.edgarly-core)
+(ns com.interrupt.edgarly.core)
 
 (defn hello
   "Say hello to caller"

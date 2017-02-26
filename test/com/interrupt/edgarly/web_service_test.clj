@@ -1,12 +1,12 @@
-(ns com.interrupt.edgarly-web-service-test
+(ns com.interrupt.web-service-test
   (:require [clojure.test :refer :all]
             [puppetlabs.trapperkeeper.app :as app]
             [puppetlabs.trapperkeeper.testutils.bootstrap :refer [with-app-with-config]]
             [puppetlabs.trapperkeeper.services.webserver.jetty9-service :refer [jetty9-service]]
             [puppetlabs.trapperkeeper.services.webrouting.webrouting-service :refer [webrouting-service]]
             [clj-http.client :as client]
-            [com.interrupt.edgarly-service :as svc]
-            [com.interrupt.edgarly-web-service :as web-svc]))
+            [com.interrupt.service :as svc]
+            [com.interrupt.web-service :as web-svc]))
 
 (deftest hello-web-service-test
   (testing "says hello to caller"
@@ -18,6 +18,6 @@
       {:webserver {:host "localhost"
                    :port 8080}
        :web-router-service {
-         :com.interrupt.edgarly-web-service/hello-web-service "/hello"}}
+         :com.interrupt.web-service/hello-web-service "/hello"}}
       (let [resp (client/get "http://localhost:8080/hello/foo" {:as :text})]
         (is (= "Hello, foo!" (:body resp)))))))

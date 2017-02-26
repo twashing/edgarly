@@ -26,6 +26,30 @@ print out the current trapperkeeper application context. Both of these take an
 optional array of keys as a parameter, which is used to retrieve a nested
 subset of the context map.
 
+## Notes
+
+You can connect to TWS, with a VNC viewer. I have TightVNC.
+
+```
+cd ~/Downloads/tvnjviewer-2.8.3-bin-gnugpl/
+java -jar tightvnc-jviewer.jar
+```
+
+Initial build of base TWS docker image
+```
+docker build --force-rm -f Dockerfile.tws.base -t twashing/edgarly-tws-base:latest .
+```
+
+Bringing up docker-compose 
+```
+# Basic
+docker-compose up 
+
+# Force a rebuild of containers
+docker-compose up --force-recreate --build
+```
+
+
 ## License
 
 Copyright © 2016 FIXME
