@@ -11,6 +11,7 @@
         context)
 
   (start [this context]
-         (log/infof "ewrapper-service started; See: %s:%s" 1 2)
-         (assoc context :ewrapper (ewrapper))))
+         (let [ew (ewrapper)]
+           (log/infof "ewrapper-service started")
+           (assoc context :ewrapper ew))))
 
