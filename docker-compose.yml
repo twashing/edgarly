@@ -10,7 +10,7 @@ services:
       VNC_PASSWORD: some_pass123
     image: twashing/edgarly-tws:latest
     ports:
-      - 4001:4001  # API
+      - 4002:4002  # API
       - 5900:5900  # VNC
     tty: true
     restart: always
