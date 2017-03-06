@@ -19,13 +19,13 @@
                  [clj-time "0.9.0"]
                  ;; end explicit versions of deps that would cause transitive dep conflicts
 
-
-                 [compojure "1.5.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [puppetlabs/trapperkeeper ~tk-version]
                  [puppetlabs/trapperkeeper-webserver-jetty9 ~tk-jetty9-version]
-
-                 [com.interactivebrokers.tws/tws-api "9.72.17-SNAPSHOT"]]
+                 [com.interactivebrokers.tws/tws-api "9.72.17-SNAPSHOT"]
+                 [compojure "1.5.0"]
+                 [org.clojure/core.async "0.3.441"]
+                 [org.clojure/core.match "0.3.0-alpha4"]]
 
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]
