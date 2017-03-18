@@ -1,6 +1,4 @@
 FROM clojure:latest
-
-
 MAINTAINER Timothy Washington
 
 COPY . /app

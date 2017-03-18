@@ -9,4 +9,3 @@ COPY resources/IBControllerStart-real.sh /root/
 COPY resources/IBController.ini /root/
 
 RUN chmod ug+x /usr/local/bin/install-base.sh
-# RUN /usr/local/bin/install-base.sh

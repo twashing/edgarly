@@ -35,9 +35,10 @@ cd ~/Downloads/tvnjviewer-2.8.3-bin-gnugpl/
 java -jar tightvnc-jviewer.jar
 ```
 
-Initial build of base TWS docker image
+Initial build of base docker images
 ```
 docker build --force-rm -f Dockerfile.tws.base -t twashing/edgarly-tws-base:latest .
+docker build --force-rm -f Dockerfile.app.base -t twashing/edgarly-app-base:latest .
 ```
 
 Bringing up docker-compose 

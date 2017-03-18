@@ -1,6 +1,4 @@
 FROM twashing/edgarly-app-base:latest
-
-
 MAINTAINER Timothy Washington
 
 COPY . /app

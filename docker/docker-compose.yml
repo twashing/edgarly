@@ -19,16 +19,18 @@ services:
       context: .
       dockerfile: Dockerfile.app
     image: twashing/edgarly-app:latest
-    volumes:
-      - .:/app
-  nrepl:
-    image: twashing/edgarly-nrepl-base:latest
-    # image: clojure
-    depends_on:
-      - tws
-    working_dir: ${PWD}
     ports:
       - 7888:7888
     volumes:
-      - .:${PWD}
-    entrypoint: lein with-profile +dev repl :headless :host 0.0.0.0 :port 7888
+      - .:/app
+  # nrepl:
+  #   image: twashing/edgarly-nrepl-base:latest
+  #   # image: clojure
+  #   depends_on:
+  #     - tws
+  #   working_dir: ${PWD}
+  #   ports:
+  #     - 7888:7888
+  #   volumes:
+  #     - .:${PWD}
+  #   entrypoint: lein with-profile +dev repl :headless :host 0.0.0.0 :port 7888

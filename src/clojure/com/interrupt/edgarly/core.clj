@@ -1,28 +1,20 @@
-(ns com.interrupt.edgarly.core)
+(ns com.interrupt.edgarly.core
+  (:require  [com.stuartsierra.component :as component]
+             [system.repl :refer [set-init! init start stop reset refresh system]]
+             [system.components.repl-server :refer [new-repl-server]]
+             [com.interrupt.component.ewrapper :refer [new-ewrapper]]
 
-(defn hello
-  "Say hello to caller"
-  [caller]
-  (format "Hello, %s!" caller))
-
-
-#_(ns edgar.ib.market
-    (:import [com.ib.client EWrapper EClientSocket Contract Order OrderState ContractDetails Execution])
-    (:use [clojure.core.strint])
-    (:require [edgar.eclientsocket :as socket]
-              [lamina.core :as lamina]
-              [overtone.at-at :as at]
-              [clj-time.core :as cime]
-              [clj-time.local :as time]
-              [clj-time.format :as format]))
+             [clojure.pprint :refer [pprint]]))
 
 
-#_(defn connect-to-market
-    "Connect to the IB marketplace. This should return a 'client' object"
-    []
-    (socket/connect-to-tws))
+(defn system-map []
+  (component/system-map
+   :nrepl (new-repl-server 7888 "0.0.0.0")  ;; useful when operating to the cloud
+   :ewrapper (new-ewrapper)))
 
-#_(defn disconnect-from-market
-    "Disconnect from the IB marketplace."
-    []
-    (socket/disconnect-from-tws))
+
+(set-init! #'system-map)
+
+(comment
+
+  (start))

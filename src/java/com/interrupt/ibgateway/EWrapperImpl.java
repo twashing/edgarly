@@ -245,8 +245,9 @@ public class EWrapperImpl implements EWrapper {
 	public void scannerData(int reqId, int rank,
 			ContractDetails contractDetails, String distance, String benchmark,
 			String projection, String legsStr) {
-		System.out.println("ScannerData. "+reqId+" - Rank: "+rank+", Symbol: "+contractDetails.contract().symbol()+", SecType: "+contractDetails.contract().secType()+", Currency: "+contractDetails.contract().currency()
+      /* System.out.println("ScannerData. "+reqId+" - Rank: "+rank+", Symbol: "+contractDetails.contract().symbol()+", SecType: "+contractDetails.contract().secType()+", Currency: "+contractDetails.contract().currency()
                 +", Distance: "+distance+", Benchmark: "+benchmark+", Projection: "+projection+", Legs String: "+legsStr);
+      */
 	}
 	//! [scannerdata]
 	

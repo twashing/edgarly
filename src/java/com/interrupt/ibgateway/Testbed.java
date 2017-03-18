@@ -27,7 +27,7 @@ public class Testbed {
 		final EClientSocket m_client = wrapper.getClient();
 		final EReaderSignal m_signal = wrapper.getSignal();
 		//! [connect]
-		m_client.eConnect("127.0.0.1", 7496, 0);
+		// m_client.eConnect("127.0.0.1", 7496, 0);
 		//! [connect]
 		//! [ereader]
 		final EReader reader = new EReader(m_client, m_signal);        

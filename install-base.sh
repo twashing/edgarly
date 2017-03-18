@@ -1,6 +1,5 @@
 #!/bin/sh -x
 
-
 export DISPLAY=":0.0"
 
 # for now just run virtual frame buffer manually:
@@ -13,13 +12,18 @@ export DISPLAY=":0.0"
 cd ~/Jts/963 &&
 ./tws &
 
-# mv ~/IBControllerStart-paper.sh ~/ibcontroller.paper/IBControllerStart.sh &&
-# cd ~/ibcontroller.paper/ &&
-# dos2unix *ini &&
-# cp IBController.ini IBController.ini-original &&
-# cat IBController.ini-original | grep -ve '^#' | grep -ve '^$' > IBController.ini &&
-# 
-# chmod a+x IBControllerStart.sh &&
-# chmod a+x ~/ibcontroller.paper/Scripts/*.sh &&
-# 
-# ./IBControllerStart.sh &
+mv ~/IBControllerStart-paper.sh ~/ibcontroller.paper/IBControllerStart.sh &&
+cd ~/ibcontroller.paper/ &&
+dos2unix *ini &&
+cp IBController.ini IBController.ini-original &&
+cat IBController.ini-original | grep -ve '^#' | grep -ve '^$' > IBController.ini &&
+
+# temporary kludge
+mkdir -p /root/IBController/ &&
+cp IBController.ini /root/IBController/
+# end kludge
+
+chmod a+x IBControllerStart.sh &&
+chmod a+x ~/ibcontroller.paper/Scripts/*.sh &&
+
+./IBControllerStart.sh &
