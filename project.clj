@@ -23,7 +23,8 @@
                  [com.interactivebrokers.tws/tws-api "9.72.17-SNAPSHOT"]
                  [compojure "1.5.0"]
                  [org.clojure/core.async "0.3.441"]
-                 [org.clojure/core.match "0.3.0-alpha4"]]
+                 [org.clojure/core.match "0.3.0-alpha4"]
+                 [org.clojure/math.combinatorics "0.1.4"]]
 
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]

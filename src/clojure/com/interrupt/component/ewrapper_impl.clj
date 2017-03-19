@@ -11,53 +11,7 @@
             ContractDetails ScannerSubscription]))
 
 
-(def clientSocketObj (atom nil))
-
-(defn ewrapper []
-  (reify
-    EWrapper
-    (connectionClosed [_]
-      (println "connectionClosed CALLED"))
-
-    #_(connectAck [_]
-      (println "connectAck CALLED")
-
-      (when (.isAsyncEConnect clientSocketObj)
-        (println "connectAck / Acknowledging connection")
-        (.startAPI clientSocketObj)))
-
-    (error [_ id errorCode errorMsg]
-      (println (str "Error. Id: "  id  ", Code: "  errorCode  ", Msg: "  errorMsg  "\n")))))
-
-#_(defn ereader-signal []
-  (reify
-    EReaderSignal
-    (issueSignal [_]
-      (println "issueSignal CALLED"))
-    (waitForSignal [_]
-      #_(println "waitForSignal CALLED"))))
-
-#_(defn eclient-socket [wrapper reader-signal]
-  (EClientSocket. wrapper reader-signal))
-
-#_(comment
-
-  (def wrapper (ewrapper))
-  (def reader-signal (ereader-signal))
-
-  ;; 1. create client socket
-  (def clientSocket (eclient-socket wrapper reader-signal))
-  (swap! clientSocketObj identity clientSocket)
-  (def twsPort 4001)
-  (def twsClientId 1)
-
-  ;; (.eConnect clientSocket "edgarly_tws_1" twsPort twsClientId)
-
-  ;; 2. start API is called in `connectAck`
-
-  ;; 3. Start consuming TWS data
-  (def eclient (Eclient. wrapper))
-  (def ereader (EReader. clientSocket reader-signal)))
+(def SCANNERDATA :scanner-data)
 
 (defn scanner-subscripion [instrument location-code scan-code]
   (doto (ScannerSubscription.)
@@ -74,8 +28,6 @@
 (defn scanner-unsubscribe [req-id client]
   (.cancelScannerSubscription client req-id))
 
-
-(def SCANNERDATA :scanner-data)
 
 (defn ewrapper-impl [publisher]
 
@@ -116,40 +68,44 @@
         (go (>! publisher ch-value))))))
 
 
-(defn step-one []
+(defn ewrapper
 
-  ;; ====
-  ;; Setup client, wrapper, process messages
+  ([] (ewrapper 1))
+  ([no-of-topics]
 
-  (let [publisher (chan (sliding-buffer 100))
-        ;; broadcast-channel (pub publisher #(:topic %))
-        ewrapperImpl (ewrapper-impl publisher)
-        client (.getClient ewrapperImpl)
-        signal (.getSignal ewrapperImpl)
+   ;; ====
+   ;; Setup client, wrapper, process messages
 
-        result (.eConnect client "edgarly_tws_1" 4002 1)
+   (let [buffer-size (* no-of-topics (+ 1 50))
+         publisher (chan (sliding-buffer 100))
+         ;; broadcast-channel (pub publisher #(:topic %))
+         ewrapperImpl (ewrapper-impl publisher)
+         client (.getClient ewrapperImpl)
+         signal (.getSignal ewrapperImpl)
 
-        ereader (EReader. client signal)]
+         result (.eConnect client "edgarly_tws_1" 4002 1)
 
-    ;; (if (.isConnected esocket)
-    ;;   (.eDisconnect esocket))
+         ereader (EReader. client signal)]
 
-    (.start ereader)
-    (future
-      (while (.isConnected client)
-        (.waitForSignal signal)
-        (try
-          (.processMsgs ereader)
-          (catch Exception e
-            (println (str "Exception: " (.getMessage e)))))))
+     ;; (if (.isConnected esocket)
+     ;;   (.eDisconnect esocket))
 
-    {:client client
-     :publisher publisher}))
+     (.start ereader)
+     (future
+       (while (.isConnected client)
+         (.waitForSignal signal)
+         (try
+           (.processMsgs ereader)
+           (catch Exception e
+             (println (str "Exception: " (.getMessage e)))))))
+
+     {:client client
+      :publisher publisher})))
 
 
 (comment
 
-  (def one (step-one))
+  (def one (ewrapper 11))
   (def client (:client one))
   (def publisher (:publisher one))
 
@@ -236,6 +192,11 @@
   ;; (.cancelScannerSubscription client 7002)
 
 
+  ;; Sanity 1:  {:topic :scanner-data, :req-id 1, :message-end false, :symbol AGFS, :sec-type #object[com.ib.client.Types$SecType 0x1ff4ec3a STK], :rank 0}
+  ;; Sanity 1:  {:topic :scanner-data, :req-id 1, :message-end false, :symbol BAA, :sec-type #object[com.ib.client.Types$SecType 0x1ff4ec3a STK], :rank 1}
+  ;; Sanity 1:  {:topic :scanner-data, :req-id 1, :message-end false, :symbol EBR B, :sec-type #object[com.ib.client.Types$SecType 0x1ff4ec3a STK], :rank 2}
+
+
   ;; ===
   ;; Stock scanners
   (def default-instrument "STK")
@@ -243,29 +204,140 @@
 
   ;; Volatility
   (scanner-subscribe 1 client default-instrument default-location "HIGH_OPT_IMP_VOLAT")
-  ;; (scanner-subscribe 2 client default-instrument default-location "HIGH_OPT_IMP_VOLAT_OVER_HIST")
+  (scanner-subscribe 2 client default-instrument default-location "HIGH_OPT_IMP_VOLAT_OVER_HIST")
 
-  (go-loop [r1 nil]
+  ;; Volume
+  (scanner-subscribe 3 client default-instrument default-location "HOT_BY_VOLUME")
+  (scanner-subscribe 4 client default-instrument default-location "TOP_VOLUME_RATE")
+  (scanner-subscribe 5 client default-instrument default-location "HOT_BY_OPT_VOLUME")
+  (scanner-subscribe 6 client default-instrument default-location "OPT_VOLUME_MOST_ACTIVE")
+  (scanner-subscribe 7 client default-instrument default-location "COMBO_MOST_ACTIVE")
 
-    (println "Sanity 1: " r1)
-    (select-keys r1 [:symbol :rank])
-    (recur (<! publisher)))
+  ;; Price Change
+  (scanner-subscribe 8 client default-instrument default-location "MOST_ACTIVE_USD")
+  (scanner-subscribe 9 client default-instrument default-location "HOT_BY_PRICE")
+  (scanner-subscribe 10 client default-instrument default-location "TOP_PRICE_RANGE")
+  (scanner-subscribe 11 client default-instrument default-location "HOT_BY_PRICE_RANGE")
 
-  (println "foo")
 
+  ;; Subscribe
+  (def publication
+    (pub publisher #(:req-id %)))
+
+  (def subscriber-one (chan))
+  (def subscriber-two (chan))
+  (def subscriber-three (chan))
+  (def subscriber-four (chan))
+  (def subscriber-five (chan))
+  (def subscriber-six (chan))
+  (def subscriber-seven (chan))
+  (def subscriber-eight (chan))
+  (def subscriber-nine (chan))
+  (def subscriber-ten (chan))
+  (def subscriber-eleven (chan))
+
+  (sub publication 1 subscriber-one)
+  (sub publication 2 subscriber-two)
+  (sub publication 3 subscriber-three)
+  (sub publication 4 subscriber-four)
+  (sub publication 5 subscriber-five)
+  (sub publication 6 subscriber-six)
+  (sub publication 7 subscriber-seven)
+  (sub publication 8 subscriber-eight)
+  (sub publication 9 subscriber-nine)
+  (sub publication 10 subscriber-ten)
+  (sub publication 11 subscriber-eleven)
+
+  (defn consume-subscriber [dest-atom subscriber]
+    (go-loop [r1 nil]
+
+      (let [{:keys [req-id symbol rank] :as val} (select-keys r1 [:req-id :symbol :rank])]
+        (if (and r1 rank)
+          (swap! dest-atom assoc rank val)))
+
+      (recur (<! subscriber))))
+
+  ;; Buckets
+  (def volat-one (atom {}))
+  (def volat-two (atom {}))
+  (def volat-three (atom {}))
+  (def volat-four (atom {}))
+  (def volat-five (atom {}))
+  (def volat-six (atom {}))
+  (def volat-seven (atom {}))
+  (def volat-eight (atom {}))
+  (def volat-nine (atom {}))
+  (def volat-ten (atom {}))
+  (def volat-eleven (atom {}))
+
+  (consume-subscriber volat-one subscriber-one)
+  (consume-subscriber volat-two subscriber-two)
+  (consume-subscriber volat-three subscriber-three)
+  (consume-subscriber volat-four subscriber-four)
+  (consume-subscriber volat-five subscriber-five)
+  (consume-subscriber volat-six subscriber-six)
+  (consume-subscriber volat-seven subscriber-seven)
+  (consume-subscriber volat-eight subscriber-eight)
+  (consume-subscriber volat-nine subscriber-nine)
+  (consume-subscriber volat-ten subscriber-ten)
+  (consume-subscriber volat-eleven subscriber-eleven)
+
+  ;; Intersection
+  (require '[clojure.set :as s])
+  (def sone (set (map :symbol (vals @volat-one))))
+  (def stwo (set (map :symbol (vals @volat-two))))
+  (def s-volatility (s/intersection sone stwo))  ;; OK
+
+  (def sthree (set (map :symbol (vals @volat-three))))
+  (def sfour (set (map :symbol (vals @volat-four))))
+  (def sfive (set (map :symbol (vals @volat-five))))
+  (def ssix (set (map :symbol (vals @volat-six))))
+  (def sseven (set (map :symbol (vals @volat-seven))))
+  (def s-volume (s/intersection sthree sfour #_sfive #_ssix #_sseven))
+
+
+  (def seight (set (map :symbol (vals @volat-eight))))
+  (def snine (set (map :symbol (vals @volat-nine))))
+  (def sten (set (map :symbol (vals @volat-ten))))
+  (def seleven (set (map :symbol (vals @volat-eleven))))
+  (def s-price-change (s/intersection #_seight #_snine sten seleven))
+
+  (s/intersection sone stwo snine)
+  (s/intersection sone stwo seleven)
+
+  ;; Unsubscribe
   (scanner-unsubscribe 1 client)
   (scanner-unsubscribe 2 client)
-  ;;
-  ;; ;; Volume
-  ;; (scanner-subscribe 3 client default-instrument default-location "HOT_BY_VOLUME")
-  ;; (scanner-subscribe 4 client default-instrument default-location "TOP_VOLUME_RATE")
-  ;; (scanner-subscribe 5 client default-instrument default-location "HOT_BY_OPT_VOLUME")
-  ;; (scanner-subscribe 6 client default-instrument default-location "OPT_VOLUME_MOST_ACTIVE")
-  ;; (scanner-subscribe 7 client default-instrument default-location "COMBO_MOST_ACTIVE")
-  ;;
-  ;; ;; Price Change
-  ;; (scanner-subscribe 8 client default-instrument default-location "MOST_ACTIVE_USD")
-  ;; (scanner-subscribe 9 client default-instrument default-location "HOT_BY_PRICE")
-  ;; (scanner-subscribe 10 client default-instrument default-location "TOP_PRICE_RANGE")
-  ;; (scanner-subscribe 11 client default-instrument default-location "HOT_BY_PRICE_RANGE")
+
+  (require '[clojure.math.combinatorics :as combo])
+  (def intersection-subsets
+    (filter (fn [e] (> (count e) 1))
+            (combo/subsets [{:name "one" :val sone}
+                            {:name "two" :val stwo}
+                            {:name "three" :val sthree}
+                            {:name "four" :val sfour}
+                            {:name "five" :val sfive}
+                            {:name "six" :val ssix}
+                            {:name "seven" :val sseven}
+                            {:name "eight" :val seight}
+                            {:name "nine" :val snine}
+                            {:name "ten" :val sten}
+                            {:name "eleven" :val seleven}])))
+
+  (def sorted-intersections
+    (sort-by #(count (:intersection %))
+             (map (fn [e]
+                    (let [result (apply s/intersection (map :val e))
+                          names (map :name e)]
+                      {:names names :intersection result}))
+                  intersection-subsets)))
+
+  (def or-volatility-volume-price-change
+    (filter (fn [e]
+              (and (> (count (:intersection e)) 1)
+                   (some #{"one" "two"} (:names e))
+                   (some #{"three" "four" "five" "six" "seven"} (:names e))
+                   (some #{"eight" "nine" "ten" "eleven"} (:names e))))
+            sorted-intersections))
+
   )

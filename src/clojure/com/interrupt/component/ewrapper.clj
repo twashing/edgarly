@@ -25,7 +25,10 @@
 
     ;; Return the component, optionally modified. Remember that if you
     ;; dissoc one of a record's base fields, you get a plain map.
-    (assoc component :ewrapper nil)))
+    (let [{:keys [client]} (:ewrapper component)]
+      (if (.isConnected client)
+        (.eDisconnect client))
+      (dissoc component :ewrapper))))
 
 (defn new-ewrapper []
   (map->EWrapper {}))
