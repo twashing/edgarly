@@ -6,7 +6,6 @@
 
              [clojure.pprint :refer [pprint]]))
 
-
 (defn system-map []
   (component/system-map
    :nrepl (new-repl-server 7888 "0.0.0.0")  ;; useful when operating to the cloud
@@ -16,5 +15,7 @@
 (set-init! #'system-map)
 
 (comment
+  (start))
 
+(defn -main [& args]
   (start))

@@ -35,4 +35,4 @@
 
   :repl-options {:init-ns user}
 
-  :main puppetlabs.trapperkeeper.main)
+   :main com.interrupt.edgarly.core)
