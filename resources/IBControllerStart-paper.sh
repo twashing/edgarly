@@ -13,7 +13,7 @@
 #=============================================================================+
 
 
-TWS_MAJOR_VRSN=963
+TWS_MAJOR_VRSN=964
 IBC_INI=/root/ibcontroller.paper/IBController.ini
 TRADING_MODE=paper
 IBC_PATH=/root/ibcontroller.paper
@@ -21,7 +21,6 @@ TWS_PATH=/root/Jts
 LOG_PATH=/root/ibcontroller.paper/Logs
 TWSUSERID=twash2016
 TWSPASSWORD=ff9vc3dN
-# JAVA_PATH=/usr/lib/jvm/java-8-openjdk-amd64/jre/bin
 JAVA_PATH=/usr/local/i4j_jres/1.8.0_60/bin
 
 

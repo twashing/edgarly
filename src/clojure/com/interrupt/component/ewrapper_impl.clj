@@ -295,7 +295,6 @@
   (def sseven (set (map :symbol (vals @volat-seven))))
   (def s-volume (s/intersection sthree sfour #_sfive #_ssix #_sseven))
 
-
   (def seight (set (map :symbol (vals @volat-eight))))
   (def snine (set (map :symbol (vals @volat-nine))))
   (def sten (set (map :symbol (vals @volat-ten))))
@@ -305,9 +304,6 @@
   (s/intersection sone stwo snine)
   (s/intersection sone stwo seleven)
 
-  ;; Unsubscribe
-  (scanner-unsubscribe 1 client)
-  (scanner-unsubscribe 2 client)
 
   (require '[clojure.math.combinatorics :as combo])
   (def intersection-subsets
@@ -340,4 +336,16 @@
                    (some #{"eight" "nine" "ten" "eleven"} (:names e))))
             sorted-intersections))
 
-  )
+
+  ;; Unsubscribe
+  (scanner-unsubscribe 1 client)
+  (scanner-unsubscribe 2 client)
+  (scanner-unsubscribe 3 client)
+  (scanner-unsubscribe 4 client)
+  (scanner-unsubscribe 5 client)
+  (scanner-unsubscribe 6 client)
+  (scanner-unsubscribe 7 client)
+  (scanner-unsubscribe 8 client)
+  (scanner-unsubscribe 9 client)
+  (scanner-unsubscribe 10 client)
+  (scanner-unsubscribe 11 client))
