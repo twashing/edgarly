@@ -1,0 +1,30 @@
+version: '2'
+services:
+  tws:
+    build:
+      context: .
+      dockerfile: Dockerfile.tws
+    environment:
+      TWSUSERID: fdemo
+      TWSPASSWORD: demouser
+      VNC_PASSWORD: some_pass123
+    image: twashing/edgarly-tws:latest
+    ports:
+      - 4002:4002  # API
+      - 5900:5900  # VNC
+    tty: true
+    restart: always
+    entrypoint: /usr/local/bin/install-base.sh
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    image: twashing/edgarly-app:latest
+    depends_on:
+      - tws
+    working_dir: ${PWD}
+    ports:
+      - 7888:7888
+    volumes:
+      - .:${PWD}
+    entrypoint: lein with-profile +app run -m com.interrupt.edgarly.core/-main

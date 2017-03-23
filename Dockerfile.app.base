@@ -1,0 +1,6 @@
+FROM pandeiro/lein:latest
+
+MAINTAINER Timothy Washington
+
+COPY project.clj .
+RUN lein deps

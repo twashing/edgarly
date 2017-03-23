@@ -1,0 +1,9 @@
+FROM clojure:latest
+MAINTAINER Timothy Washington
+
+COPY . /app
+WORKDIR /app
+
+RUN cd /app \
+    && lein deps \
+    && apt-get install ping 
