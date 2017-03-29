@@ -197,6 +197,10 @@
   ;; Sanity 1:  {:topic :scanner-data, :req-id 1, :message-end false, :symbol EBR B, :sec-type #object[com.ib.client.Types$SecType 0x1ff4ec3a STK], :rank 2}
 
 
+  (require '[system.repl])
+  (def client (-> system.repl/system :ewrapper :ewrapper :client))
+  (def publisher (-> system.repl/system :ewrapper :ewrapper :publisher))
+
   ;; ===
   ;; Stock scanners
   (def default-instrument "STK")
@@ -334,11 +338,11 @@
                    (some #{"one" "two"} (:names e))
                    (some #{"three" "four" "five" "six" "seven"} (:names e))
                    (some #{"eight" "nine" "ten" "eleven"} (:names e))))
-            sorted-intersections))
+            sorted-intersections)
 
 
-  ;; Unsubscribe
-  (scanner-unsubscribe 1 client)
+    ;; Unsubscribe
+    (scanner-unsubscribe 1 client))
   (scanner-unsubscribe 2 client)
   (scanner-unsubscribe 3 client)
   (scanner-unsubscribe 4 client)
