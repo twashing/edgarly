@@ -1,5 +1,38 @@
 version: '2'
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:3.1.1
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+    expose:
+      - 2181
+
+  kafka:
+    expose:
+      - 9092
+      - 8082
+    environment:
+      - KAFKA_BROKER_ID=0
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+    image: confluentinc/cp-kafka:3.1.1
+    depends_on:
+      - zookeeper
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:3.1.1
+    expose:
+      - 8081
+    environment:
+        - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
+        - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+        - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081
+        - SCHEMA_REGISTRY_DEBUG=true
+    depends_on:
+      - kafka
+      - zookeeper
+
   tws:
     build:
       context: .
@@ -15,6 +48,7 @@ services:
     tty: true
     restart: always
     entrypoint: /usr/local/bin/install-base.sh
+
   app:
     build:
       context: .
@@ -22,9 +56,25 @@ services:
     image: twashing/edgarly-app:latest
     depends_on:
       - tws
+      - kafka
+      - zookeeper
     working_dir: ${PWD}
     ports:
       - 7888:7888
     volumes:
       - .:${PWD}
     entrypoint: lein with-profile +app run -m com.interrupt.edgarly.core/-main
+
+  kafka-tools:
+    image: confluentinc/cp-kafka:3.1.1
+    depends_on:
+      - zookeeper
+      - schema-registry
+      - kafka
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - ZOOKEEPER_CONNECT=zookeeper:2181
+      - SCHEMA_REGISTRY_URL=http://schema-registry:8081
+    working_dir: /usr/src/app
+    entrypoint: /bin/bash
+

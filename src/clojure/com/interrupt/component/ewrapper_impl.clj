@@ -10,7 +10,6 @@
             EWrapper EClient EClientSocket EReader EReaderSignal
             ContractDetails ScannerSubscription]))
 
-
 (def SCANNERDATA :scanner-data)
 
 (defn scanner-subscripion [instrument location-code scan-code]
@@ -27,7 +26,6 @@
 
 (defn scanner-unsubscribe [req-id client]
   (.cancelScannerSubscription client req-id))
-
 
 (defn ewrapper-impl [publisher]
 
@@ -67,7 +65,6 @@
 
         (go (>! publisher ch-value))))))
 
-
 (defn ewrapper
 
   ([] (ewrapper 1))
@@ -75,7 +72,6 @@
 
    ;; ====
    ;; Setup client, wrapper, process messages
-
    (let [buffer-size (* no-of-topics (+ 1 50))
          publisher (chan (sliding-buffer 100))
          ;; broadcast-channel (pub publisher #(:topic %))
@@ -101,7 +97,6 @@
 
      {:client client
       :publisher publisher})))
-
 
 (comment
 
