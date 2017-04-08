@@ -35,10 +35,12 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/math.combinatorics "0.1.4"]
 
-                 #_[org.apache.kafka/kafka-streams "0.10.2.0"]
-                 [fundingcircle/kafka.client "0.4.2"]
-                 [fundingcircle/kafka.serdes "0.5.3"]
-                 [fundingcircle/kafka.streams "0.4.7"]]
+                 [org.apache.kafka/kafka-streams "0.10.2.0"]
+                 #_[fundingcircle/kafka.client "0.4.2"]
+                 #_[fundingcircle/kafka.serdes "0.5.3"]
+                 [fundingcircle/kafka.streams "0.4.7"]
+                 [ymilky/franzy "0.0.1"]
+                 [ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]]
 
   :source-paths ["src/clojure"]
   :java-source-paths ["src/java"]

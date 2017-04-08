@@ -65,16 +65,16 @@ services:
       - .:${PWD}
     entrypoint: lein with-profile +app run -m com.interrupt.edgarly.core/-main
 
-  kafka-tools:
-    image: confluentinc/cp-kafka:3.1.1
-    depends_on:
-      - zookeeper
-      - schema-registry
-      - kafka
-    environment:
-      - BOOTSTRAP_SERVERS=kafka:9092
-      - ZOOKEEPER_CONNECT=zookeeper:2181
-      - SCHEMA_REGISTRY_URL=http://schema-registry:8081
-    working_dir: /usr/src/app
-    entrypoint: /bin/bash
+#   kafka-tools:
+#     image: confluentinc/cp-kafka:3.1.1
+#     depends_on:
+#       - zookeeper
+#       - schema-registry
+#       - kafka
+#     environment:
+#       - BOOTSTRAP_SERVERS=kafka:9092
+#       - ZOOKEEPER_CONNECT=zookeeper:2181
+#       - SCHEMA_REGISTRY_URL=http://schema-registry:8081
+#     working_dir: /usr/src/app
+#     entrypoint: /bin/bash
 

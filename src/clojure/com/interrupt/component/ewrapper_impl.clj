@@ -333,11 +333,10 @@
                    (some #{"one" "two"} (:names e))
                    (some #{"three" "four" "five" "six" "seven"} (:names e))
                    (some #{"eight" "nine" "ten" "eleven"} (:names e))))
-            sorted-intersections)
+            sorted-intersections))
 
-
-    ;; Unsubscribe
-    (scanner-unsubscribe 1 client))
+  ;; Unsubscribe
+  (scanner-unsubscribe 1 client)
   (scanner-unsubscribe 2 client)
   (scanner-unsubscribe 3 client)
   (scanner-unsubscribe 4 client)

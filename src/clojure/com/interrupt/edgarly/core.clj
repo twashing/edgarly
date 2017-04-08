@@ -10,7 +10,8 @@
 (defn system-map []
   (component/system-map
    :nrepl (new-repl-server 7888 "0.0.0.0")  ;; useful when operating to the cloud
-   :ewrapper (new-ewrapper)))
+   ;; :ewrapper (new-ewrapper)
+   ))
 
 (set-init! #'system-map)
 (defn start-system [] (start))
@@ -30,18 +31,3 @@
 (defn -main [& args]
   (Thread/sleep 10000) ;; a hack, to ensure that the tws machine is available, before we try to connect to it.
   (start-system))
-
-;; TODO
-;; make new project - ibgateway
-;; logging
-;; configs
-;; core.spec?
-;; tests
-
-;; > Lifecycle functions
-;; return channels
-;; expose scanner results in system map
-;; expose request ids in system map (filter by request type)
-;; check that system is started
-;; check that connection is valid
-
