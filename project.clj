@@ -40,9 +40,13 @@
                  #_[fundingcircle/kafka.serdes "0.5.3"]
                  [fundingcircle/kafka.streams "0.4.7"]
                  [ymilky/franzy "0.0.1"]
-                 [ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]]
+                 [ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]
 
-  :source-paths ["src/clojure"]
+                 [org.clojure/test.check "0.9.0"]
+                 [clojure-future-spec "1.9.0-alpha15"]
+                 [spyscope "0.1.5"]]
+
+  :source-paths ["src/clojure" "test/clojure"]
   :java-source-paths ["src/java"]
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[clj-http "3.0.0"]
@@ -52,5 +56,6 @@
                    :resource-paths ["resources"]}}
 
   :repl-options {:init-ns user}
+  :injections [(require 'spyscope.core)]
 
   :main com.interrupt.edgarly.core)
