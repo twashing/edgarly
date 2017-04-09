@@ -3,11 +3,12 @@
              [system.repl :refer [set-init! init start stop reset refresh system]]
              [system.components.repl-server :refer [new-repl-server]]
              [com.interrupt.component.ewrapper :refer [new-ewrapper]]
+             [clojure.core.match :refer [match]]
              [clojure.spec :as s]
              [clojure.spec.gen :as sg]
              [clojure.spec.test :as st]
              [clojure.future :refer :all]
-
+             [clojure.set :as cs]
              [clojure.pprint :refer [pprint]])
   (:import [java.util.concurrent TimeUnit]))
 
@@ -35,102 +36,50 @@
 (set-init! #'system-map)
 
 
-;; ===
-(defn average [list-sum list-count]
-  (/ list-sum list-count))
-
-(s/fdef average
-        :args (s/and (s/cat :list-sum float? :list-count integer?)
-                     #(not (zero? (:list-count %))))
-        :ret number?)
-
-
-;; ===
-(def scanner-subscriptions [{::name "one"
-                             ::val {}
-                             ::tag :volatility
-                             ::reqid 1}
-                            {::name "three"
-                             ::val {}
-                             ::tag :volume
-                             ::reqid 3}
-                            {::name "eight"
-                             ::val {}
-                             ::tag :price
-                             ::reqid 8}])
-
 (s/def ::reqid pos-int?)
 (s/def ::subscription-element (s/keys :req [::reqid]))
 (s/def ::subscriptions (s/coll-of ::subscription-element))
 
+(defn scannerid-availableid-pairs [scanner-subscriptions]
+  (let [scannerids (sort (map ::reqid scanner-subscriptions))
+        scannerids-largest (last scannerids)
+        first-id (first scannerids)
+        contiguous-numbers (take 10 (range 1 scannerids-largest))
+        availableids (sort (cs/difference (into #{} contiguous-numbers)
+                                          (into #{} scannerids)))]
+
+    [scannerids availableids]))
+
 (defn next-reqid [scanner-subscriptions]
-  #spy/d scanner-subscriptions
-  :foo
-  #_(let [reqids (sort (map :reqid scanner-subscriptions))
-        reqids-count (count reqids)
-        first-id (first reqids)
-
-        contiguous-numbers-from-first (range first-id (+ first-id reqids-count))
-        gap-numbers (remove nil?
-                            (map (fn [left right]
-                                   (if-not (= left right)
-                                     right
-                                     nil))
-                                 reqids
-                                 contiguous-numbers-from-first))]
-
-    (if-not (empty? gap-numbers)
-      (first gap-numbers)
-      (+ 1 (last reqids)))
-
-    ))
+  (match [scanner-subscriptions]
+         [nil] 1
+         [[]] 1
+         :else (let [[scannerids availableids] (scannerid-availableid-pairs scanner-subscriptions)]
+                 (if-not (empty? availableids)
+                   (first availableids)
+                   (+ 1 (last scannerids))))))
 
 (s/fdef next-reqid
         :args (s/cat :subscriptions ::subscriptions)
-        :ret (s/fspec :args (s/cat :y number?)))
+        :ret number?
+        :fn (s/and
 
-;; (s/exercise-fn `next-reqid)
-;; (st/check `next-reqid)
+             ;; Handles nil and empty sets
+             #(if (empty? (-> % :args :subscriptions))
+                (= 1 (:ret %))
+                (pos-int? (:ret %)))
 
-;; ===
+             ;; Finds the first gap number
+             ;; Can be in first position
+             ;; Gap can be on left or right side
+             (fn [x]
+               (let [reqids (sort (map ::reqid (-> x :args :subscriptions)))
+                     fid (first reqids)]
+                 (match [fid]
+                        [nil] 1
+                        [(_ :guard #(> % 1))] (= 1 (:ret x))
+                        :else (pos-int? (:ret x)))))))
 
-(defn ranged-rand
-  "Returns random int in range start <= rand < end"
-  [start end]
-  (+ start (long (rand (- end start)))))
-
-(s/fdef ranged-rand
-        :args (s/and (s/cat :start int? :end int?)
-                     #(< (:start %) (:end %)))
-        :ret int?
-        #_:fn #_(s/and #(>= (:ret %) (-> % :args :start))
-                   #(< (:ret %) (-> % :args :end))))
-
-;; (s/exercise-fn `ranged-rand)
-;; (st/check `ranged-rand)
-
-
-(comment
-
-  ;; compares existing list of request IDs, to the set of numbers from 1 to the highest number
-  ;;
-  ;; (3 5 15) -> 1 should be the first gap
-  ;; (1 2 3 4 5 6 7 8 9 10 11 12 13 14)
-  ;;
-  ;; (1 2 3 5) -> 4 should be the first gap
-  ;; (1 2 3 4 5)
-  ;;
-  ;; (1 2 3 4 5 6 7 8 9 10)
-  ;; (1 2 10) -> 3 should be the first gap
-  ;;
-  ;; finds the first gap number
-  ;; can be in first position
-  ;; gap can be on left or right side
-  ;; handles nil and empty sets
-
-  (next-reqid scanner-subscriptions)
-  (next-reqid [])
-  (next-reqid nil))
 
 (def volat-one (atom {}))
 (def volat-two (atom {}))
@@ -165,14 +114,6 @@
   (Thread/sleep 000) ;; a hack, to ensure that the tws machine is available, before we try to connect to it.
   (start-system))
 
-(comment
-
-  (pprint system)
-  (keys system)
-
-  (pprint (:ewrapper system))
-
-  )
 
 (comment
 

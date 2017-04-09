@@ -42,6 +42,7 @@
                  [ymilky/franzy "0.0.1"]
                  [ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]
 
+                 [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/test.check "0.9.0"]
                  [clojure-future-spec "1.9.0-alpha15"]
                  [spyscope "0.1.5"]]
