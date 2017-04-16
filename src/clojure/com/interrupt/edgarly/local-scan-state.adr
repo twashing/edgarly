@@ -1,0 +1,28 @@
+System
+  [x] don't want to go through update lifecycle function on each change
+
+Atoms
+  [ok] fast
+  [x] no sensible place where they can live 
+
+Datomic
+  [ok] sensible managed storage
+  [x] but storing management of algorithmic state
+  [x] it's going to be stored in Kafka anyways
+
+Kafka
+  [ok] sensible managed storage
+  [x] if we store state there, we'll have to "Stream Process" it. Ie aggregation, join), before sending out the final filtered scans
+  [x] I need to decide now, between Kafka Streams and Onyx
+
+[ok] Atoms for a quick & dirty solution
+> Ideally Onyx for stream joins
+> Fallback to Kafka Streams
+
+autom trading
+nn
+bookkeeping
+
+trading engine
+platform - streams
+make it work

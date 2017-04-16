@@ -1,21 +1,92 @@
 (ns com.interrupt.streaming.core
   (:require [clojure.java.io :as io]
             [aero.core :as aero]
-            [franzy.admin.zookeeper.client :as client]
-            [franzy.admin.topics :as topics]
-            [franzy.serialization.serializers :as serializers]
-            [franzy.serialization.deserializers :as deserializers]
-            [franzy.clients.consumer.protocols :refer :all]
-            [franzy.clients.consumer.client :as consumer]
-            [franzy.clients.producer.client :as producer]
-            [franzy.clients.producer.defaults :as pd]
-            [franzy.clients.consumer.defaults :as cd]
-            [franzy.clients.producer.protocols :refer :all]
-            [kafka.streams.lambdas :refer :all])
-  (:import [java.util Map HashMap Properties]
+            #_[franzy.admin.zookeeper.client :as client]
+            #_[franzy.admin.topics :as topics]
+            #_[franzy.serialization.serializers :as serializers]
+            #_[franzy.serialization.deserializers :as deserializers]
+            #_[franzy.clients.consumer.protocols :refer :all]
+            #_[franzy.clients.consumer.client :as consumer]
+            #_[franzy.clients.producer.client :as producer]
+            #_[franzy.clients.producer.defaults :as pd]
+            #_[franzy.clients.consumer.defaults :as cd]
+            #_[franzy.clients.producer.protocols :refer :all]
+            #_[kafka.streams.lambdas :refer :all]
+
+            #_[clojure.core.async :refer (<!!)] 
+            #_[datomic.client :as dc]
+
+            [clojure.pprint :refer [pprint]])
+
+  #_(:import [java.util Map HashMap Properties]
            [org.apache.kafka.streams StreamsConfig KafkaStreams]
            [org.apache.kafka.streams.kstream KStreamBuilder KStream KTable]
            [org.apache.kafka.common.serialization Serde Serdes]))
+
+(comment
+
+  #_(def conn
+    (<!! (dc/connect
+          {:db-name "hello"
+
+           ;; :account-id client/PRO_ACCOUNT
+           ;; :secret "mysecret"
+           ;; :access-key "myaccesskey"
+           ;; :region "none"
+
+           :endpoint "datomic:free://edgarly_datomic_1:4334"
+           :service "peer-server"})))
+
+
+  (require '[datomic.api :as d])
+  (def db-uri "datomic:mem://goodbye")
+  (def result (d/create-database db-uri))
+  (def conn (d/connect db-uri))
+
+  (require '[datomic.api :as d])
+  (def db-uri "datomic:free://edgarly_datomic_1:4334/goodbye")
+  (def result (d/create-database db-uri))
+  (def conn (d/connect db-uri))
+
+  (require '[datomic.api :as d])
+  (def db-uri "datomic:free://localhost:4334/hello")
+  (def result (d/create-database db-uri))
+  (def conn (d/connect db-uri))
+
+
+  {:com.interrupt.edgarly.core/reqid 1
+   :com.interrupt.edgarly.core/scan-name "HIGH_OPT_IMP_VOLAT"
+   :com.interrupt.edgarly.core/scan-symbol "YTEN"
+   :com.interrupt.edgarly.core/scan-rank 0
+   :com.interrupt.edgarly.core/tag :volatility}
+
+  {:db/ident :com.interrupt.edgarly.core/reqid
+   :db/valueType :db.type/long
+   :db/cardinality :db.cardinality/one
+   :db/doc "The TWS Gateway request id of the data being pulled"}
+
+  ;; **
+  {:db/ident :com.interrupt.edgarly.core/scan-name
+   :db/valueType :db.type/string
+   :db/cardinality :db.cardinality/one
+   :db/doc "The name of the market scan request, made to IB"}
+
+  {:db/ident :com.interrupt.edgarly.core/scan-symbol
+   :db/valueType :db.type/string
+   :db/cardinality :db.cardinality/many
+   :db/doc "The scan result, contains stock symbols, and thier rank, according to the scan type."}
+
+  {:db/ident :com.interrupt.edgarly.core/scan-rank
+   :db/valueType :db.type/long
+   :db/cardinality :db.cardinality/many
+   :db/doc "The scan result, contains stock symbols, and thier rank, according to the scan type."}
+
+  {:db/ident :com.interrupt.edgarly.core/tag
+   :db/valueType :db.type/keyword
+   :db/cardinality :db.cardinality/one
+   :db/doc "The type of scan being made"}
+
+  )
 
 (comment
 

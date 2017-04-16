@@ -6,6 +6,8 @@
 
   ;; :pedantic? :abort
   :repositories [["myMavenRepo.read" "https://mymavenrepo.com/repo/HaEY4usKuLXXnqmXBr0z"]
+                 ["my.datomic.com" {:url "https://my.datomic.com/repo"
+                                    :creds :gpg}]
                  ["confluent" {:url "http://packages.confluent.io/maven/"}]
                  ["snapshots" {:url "https://fundingcircle.artifactoryonline.com/fundingcircle/libs-snapshot-local"
                                :username "tim.washington"
@@ -24,7 +26,7 @@
                  [clj-time "0.9.0"]
                  ;; end explicit versions of deps that would cause transitive dep conflicts
 
-                 [org.clojure/tools.logging "0.3.1"]
+                 #_[org.clojure/tools.logging "0.3.1"]
                  [aero "1.1.2"]
                  [com.stuartsierra/component "0.3.2"]
                  [org.danielsz/system "0.4.1-SNAPSHOT"]
@@ -35,15 +37,18 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/math.combinatorics "0.1.4"]
 
-                 [org.apache.kafka/kafka-streams "0.10.2.0"]
+                 #_[org.apache.kafka/kafka-streams "0.10.2.0"]
                  #_[fundingcircle/kafka.client "0.4.2"]
                  #_[fundingcircle/kafka.serdes "0.5.3"]
-                 [fundingcircle/kafka.streams "0.4.7"]
-                 [ymilky/franzy "0.0.1"]
-                 [ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]
+                 #_[fundingcircle/kafka.streams "0.4.7"]
+                 #_[ymilky/franzy "0.0.1"]
+                 #_[ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]
 
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [com.rpl/specter "1.0.0"]
+                 #_[com.datomic/clj-client "0.8.606"]
+                 #_[com.datomic/datomic-pro "0.9.5561"]
+                 [com.datomic/datomic-free "0.9.5561"]
                  [org.clojure/test.check "0.9.0"]
                  [clojure-future-spec "1.9.0-alpha15"]
                  [spyscope "0.1.5"]]
