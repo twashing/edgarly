@@ -44,6 +44,13 @@
                  #_[ymilky/franzy "0.0.1"]
                  #_[ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]
 
+                 [org.apache.kafka/kafka_2.11 "0.10.1.1" :exclusions [org.slf4j/slf4j-log4j12]]
+                 [org.onyxplatform/onyx "0.10.0-beta12"]
+                 [org.onyxplatform/onyx-kafka "0.10.0.0-beta12"]
+                 [ymilky/franzy "0.0.1"]
+                 [ymilky/franzy-transit "0.0.1"]
+                 [ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]
+
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [com.rpl/specter "1.0.0"]
                  #_[com.datomic/clj-client "0.8.606"]
