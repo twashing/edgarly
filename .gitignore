@@ -8,3 +8,6 @@ pom.xml.asc
 /.lein-*
 /.nrepl-port
 /profiles.clj
+/resources/IBController.ini
+/resources/config.edn
+/resources/dev-config.edn

@@ -1,8 +1,5 @@
 FROM ubuntu:16.04
-
-
 MAINTAINER Timothy Washington
-
 
 # Install libs
 # xvfb - Install xvfb - Virtual Framebuffer 'fake' X server 

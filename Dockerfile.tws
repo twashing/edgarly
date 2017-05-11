@@ -1,4 +1,4 @@
-FROM twashing/edgarly-tws-base:latest
+FROM twashing/ibgateway-tws-base:latest
 MAINTAINER Timothy Washington
 
 COPY install-base.sh /usr/local/bin/

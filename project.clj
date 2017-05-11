@@ -1,6 +1,6 @@
-(defproject com.interrupt/edgarly "0.1.0-SNAPSHOT"
+(defproject com.interrupt/ibgateway "0.1.0-SNAPSHOT"
   :description "Platform code for the edgar trading system"
-  :url "https://github.com/twashing/edgarly"
+  :url "https://github.com/twashing/ibgateway"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
@@ -37,13 +37,6 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/math.combinatorics "0.1.4"]
 
-                 #_[org.apache.kafka/kafka-streams "0.10.2.0"]
-                 #_[fundingcircle/kafka.client "0.4.2"]
-                 #_[fundingcircle/kafka.serdes "0.5.3"]
-                 #_[fundingcircle/kafka.streams "0.4.7"]
-                 #_[ymilky/franzy "0.0.1"]
-                 #_[ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]
-
                  [org.apache.kafka/kafka_2.11 "0.10.1.1" :exclusions [org.slf4j/slf4j-log4j12]]
                  [org.onyxplatform/onyx "0.10.0-beta12"]
                  [org.onyxplatform/onyx-kafka "0.10.0.0-beta12"]
@@ -72,4 +65,4 @@
   :repl-options {:init-ns user}
   :injections [(require 'spyscope.core)]
 
-  :main com.interrupt.edgarly.core)
+  :main com.interrupt.ibgateway.core)

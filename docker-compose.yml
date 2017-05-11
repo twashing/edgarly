@@ -28,7 +28,7 @@ services:
       TWSUSERID: fdemo
       TWSPASSWORD: demouser
       VNC_PASSWORD: some_pass123
-    image: twashing/edgarly-tws:latest
+    image: twashing/ibgateway-tws:latest
     ports:
       - 4002:4002  # API
       - 5900:5900  # VNC
@@ -43,13 +43,13 @@ services:
 #       - 4335:4335
 #       - 4336:4336
 #     environment:
-#       - ALT_HOST=edgarly_datomic_1
+#       - ALT_HOST=ibgateway_datomic_1
 
   app:
     build:
       context: .
       dockerfile: Dockerfile.app
-    image: twashing/edgarly-app:latest
+    image: twashing/ibgateway-app:latest
     depends_on:
       - tws
       - kafka
@@ -59,7 +59,7 @@ services:
       - 7888:7888
     volumes:
       - .:${PWD}
-    entrypoint: lein with-profile +app run -m com.interrupt.edgarly.core/-main
+    entrypoint: lein with-profile +app run -m com.interrupt.ibgateway.core/-main
 
   kafka-tools:
     image: confluentinc/cp-kafka:3.1.1

@@ -1,4 +1,4 @@
-(ns com.interrupt.edgarly.core
+(ns com.interrupt.ibgateway.core
   (:require  [com.stuartsierra.component :as component]
              [system.repl :refer [set-init! init start stop reset refresh system]]
              [system.components.repl-server :refer [new-repl-server]]
