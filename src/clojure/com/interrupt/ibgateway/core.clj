@@ -269,6 +269,6 @@
 (defn open-request-ids [])
 
 (defn -main [& args]
-  (Thread/sleep 000) ;; a hack, to ensure that the tws machine is available, before we try to connect to it.
+  (Thread/sleep 5000) ;; a hack, to ensure that the tws machine is available, before we try to connect to it.
   (start-system))
 
