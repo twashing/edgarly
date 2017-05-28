@@ -3,6 +3,7 @@
              [system.repl :refer [set-init! init start stop reset refresh system]]
              [system.components.repl-server :refer [new-repl-server]]
              [com.interrupt.component.ewrapper :refer [new-ewrapper]]
+             [com.interrupt.component.onyx :refer [new-onyx]]
              [com.interrupt.component.ewrapper-impl :as ei]
              [clojure.string :as str]
              [clojure.core.async :refer [chan >! <! merge go go-loop pub sub unsub-all sliding-buffer]]
@@ -21,7 +22,8 @@
 (defn system-map []
   (component/system-map
    :nrepl (new-repl-server 7888 "0.0.0.0")  ;; useful when operating to the cloud
-   :ewrapper (new-ewrapper)))
+   :ewrapper (new-ewrapper)
+   :onyx (new-onyx)))
 
 (set-init! #'system-map)
 (defn start-system [] (start))

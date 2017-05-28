@@ -4,19 +4,10 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  ;; :pedantic? :abort
-  :repositories [["myMavenRepo.read" "https://mymavenrepo.com/repo/HaEY4usKuLXXnqmXBr0z"]
-                 ["my.datomic.com" {:url "https://my.datomic.com/repo"
-                                    :creds :gpg}]
-                 ["confluent" {:url "http://packages.confluent.io/maven/"}]
-                 ["snapshots" {:url "https://fundingcircle.artifactoryonline.com/fundingcircle/libs-snapshot-local"
-                               :username "tim.washington"
-                               :password "APAKktBy8jcwd7YGoJtUn94xsVk"
-                               :sign-releases false}]
-                 ["releases" {:url "https://fundingcircle.artifactoryonline.com/fundingcircle/libs-release-local"
-                              :username "tim.washington"
-                              :password "APAKktBy8jcwd7YGoJtUn94xsVk"
-                              :sign-releases false}]]
+  :repositories [#_["my.datomic.com" {:url "https://my.datomic.com/repo"
+                                      :creds :gpg}]
+                 ["myMavenRepo.read" "https://mymavenrepo.com/repo/HaEY4usKuLXXnqmXBr0z"]
+                 ["myMavenRepo.write" "https://mymavenrepo.com/repo/xc9d5m3WdTIFAqIiiYkn/"]]
 
   :dependencies [[org.clojure/clojure "1.8.0"]
 
@@ -49,6 +40,8 @@
                  #_[com.datomic/clj-client "0.8.606"]
                  #_[com.datomic/datomic-pro "0.9.5561"]
                  [com.datomic/datomic-free "0.9.5561"]
+
+                 [com.interrupt/edgarly "0.1.2-SNAPSHOT"]
                  [org.clojure/test.check "0.9.0"]
                  [clojure-future-spec "1.9.0-alpha15"]
                  [spyscope "0.1.5"]]
@@ -59,7 +52,8 @@
                    :dependencies [[clj-http "3.0.0"]
                                   [org.clojure/tools.namespace "0.2.11"]
                                   [suspendable "0.1.1"]
-                                  [ring-mock "0.1.5"]]
+                                  [ring-mock "0.1.5"]
+                                  [embedded-kafka "0.3.3"]]
                    :resource-paths ["resources"]}}
 
   :repl-options {:init-ns user}
