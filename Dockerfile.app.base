@@ -6,5 +6,6 @@ COPY . /app
 WORKDIR /app
 
 RUN lein deps
+VOLUME /root/.m2/repository
 
 ENTRYPOINT ["/bin/bash"]

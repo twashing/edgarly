@@ -7,7 +7,7 @@
             [com.interrupt.streaming.platform.scanner-command :as psc]))
 
 
-(deftest test-setup-onyx-component
+#_(deftest test-setup-onyx-component
   (with-test-broker producer consumer
 
     (let [{:keys [zookeeper-url] :as config} (read-config "config.edn" {:profile :test})

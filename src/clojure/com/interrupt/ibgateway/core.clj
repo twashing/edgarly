@@ -23,7 +23,7 @@
   (component/system-map
    :nrepl (new-repl-server 7888 "0.0.0.0")  ;; useful when operating to the cloud
    :ewrapper (new-ewrapper)
-   :onyx (new-onyx)))
+   #_:onyx #_(new-onyx)))
 
 (set-init! #'system-map)
 (defn start-system [] (start))
