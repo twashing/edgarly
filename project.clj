@@ -41,7 +41,7 @@
                  #_[com.datomic/datomic-pro "0.9.5561"]
                  [com.datomic/datomic-free "0.9.5561"]
 
-                 [com.interrupt/edgarly "0.1.2-SNAPSHOT"]
+                 #_[com.interrupt/edgarly "0.1.2-SNAPSHOT"]
                  [org.clojure/test.check "0.9.0"]
                  [clojure-future-spec "1.9.0-alpha15"]
                  [spyscope "0.1.5"]]

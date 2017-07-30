@@ -1,6 +1,10 @@
 FROM pandeiro/lein:latest
-
 MAINTAINER Timothy Washington
 
-COPY project.clj .
+
+COPY . /app
+WORKDIR /app
+
 RUN lein deps
+
+ENTRYPOINT ["/bin/bash"]

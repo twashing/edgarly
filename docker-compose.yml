@@ -36,15 +36,6 @@ services:
     restart: always
     entrypoint: /usr/local/bin/install-base.sh
 
-#   datomic:
-#     image: akiel/datomic-free
-#     ports:
-#       - 4334:4334
-#       - 4335:4335
-#       - 4336:4336
-#     environment:
-#       - ALT_HOST=ibgateway_datomic_1
-
   app:
     build:
       context: .
