@@ -16,6 +16,11 @@ B) You have to do an Initial build of base docker images.
 ```
 docker build --no-cache -f Dockerfile.tws.base -t twashing/ibgateway-tws-base:latest -t twashing/ibgateway-tws-base:`git rev-parse HEAD` .
 docker build --no-cache -f Dockerfile.app.base -t twashing/ibgateway-app-base:latest -t twashing/ibgateway-app-base:`git rev-parse HEAD` .
+
+docker build --no-cache -f Dockerfile.tws -t twashing/ibgateway-tws:latest -t twashing/ibgateway-tws:`git rev-parse HEAD` .
+docker build --no-cache -f Dockerfile.app -t twashing/ibgateway-app:latest -t twashing/ibgateway-app:`git rev-parse HEAD` .
+
+lein with-profile  +app  run -m  com.interrupt.ibgateway.core/-main
 ```
 
 C) Bringing up docker-compose 
