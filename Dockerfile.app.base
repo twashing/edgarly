@@ -1,11 +1,9 @@
 FROM pandeiro/lein:latest
 MAINTAINER Timothy Washington
 
-
-COPY . /app
-WORKDIR /app
-
+COPY project.clj /app
 RUN lein deps
 VOLUME /root/.m2/repository
+COPY . /app
 
 ENTRYPOINT ["/bin/bash"]

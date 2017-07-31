@@ -1,13 +1,13 @@
 (ns com.interrupt.component.onyx
   (:require [com.stuartsierra.component :as component]
             [onyx.api]
-            #_[com.interrupt.streaming.platform.scanner-command :as psc]
-            #_[com.interrupt.streaming.platform.scanner :as ps]
-            #_[onyx.test-helper :refer [load-config]]
+            [com.interrupt.streaming.platform.scanner-command :as psc]
+            [com.interrupt.streaming.platform.scanner :as ps]
+            [onyx.test-helper :refer [load-config]]
             [aero.core :refer [read-config]]))
 
 
-#_(defrecord Onyx []
+(defrecord Onyx []
   component/Lifecycle
 
   (start [component]
@@ -52,4 +52,4 @@
       (dissoc component :onyx))))
 
 (defn new-onyx []
-  #_(map->Onyx {}))
+  (map->Onyx {}))
