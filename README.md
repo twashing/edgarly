@@ -12,12 +12,12 @@ cd ~/Downloads/tvnjviewer-2.8.3-bin-gnugpl/
 java -jar tightvnc-jviewer.jar
 ```
 
-B) You have to do an Initial build of base docker images.
+B) You have to do an initial build of base docker images.
 ```
 docker build --no-cache -f Dockerfile.tws.base -t twashing/ibgateway-tws-base:latest -t twashing/ibgateway-tws-base:`git rev-parse HEAD` .
-docker build --no-cache -f Dockerfile.app.base -t twashing/ibgateway-app-base:latest -t twashing/ibgateway-app-base:`git rev-parse HEAD` .
-
 docker build --no-cache -f Dockerfile.tws -t twashing/ibgateway-tws:latest -t twashing/ibgateway-tws:`git rev-parse HEAD` .
+
+docker build --no-cache -f Dockerfile.app.base -t twashing/ibgateway-app-base:latest -t twashing/ibgateway-app-base:`git rev-parse HEAD` .
 docker build --no-cache -f Dockerfile.app -t twashing/ibgateway-app:latest -t twashing/ibgateway-app:`git rev-parse HEAD` .
 
 lein with-profile  +app  run -m  com.interrupt.ibgateway.core/-main
@@ -42,17 +42,6 @@ docker-compose up --force-recreate --build
 
 ## Issues
 
-### lein deps exits when called from Dockerfile
-```
-# Can't preload .m2 repository
-# None of these commands work in the Dockerfile
-RUN lein deps
-RUN /bin/bash -c 'lein deps'
-RUN ["/bin/bash", "-c", "lein deps"]
-
-# They all yield this error
-The command 'lein deps' returned a non-zero code: 1
-```
 ### Can't reach myMavenRepo.read or myMavenRepo.write, from inside a container
 
 When pulling lein dependencies, inside a running container, I get this error.

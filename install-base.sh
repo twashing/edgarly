@@ -9,7 +9,7 @@ export DISPLAY=":0.0"
 /usr/bin/x11vnc -ncache 10 -ncache_cr -viewpasswd remote_view_only_pass -passwd some_pass123  -display :0 -forever -shared -logappend /var/log/x11vnc.log -bg -noipv6
 
 # We have to start TWS manually, to configure few things:
-cd ~/Jts/964
+cd ~/Jts/966
 ./tws &
 
 mv ~/IBControllerStart-paper.sh ~/ibcontroller.paper/IBControllerStart.sh

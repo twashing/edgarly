@@ -11,7 +11,8 @@ RUN apt-get update && \
 	    xvfb \
 	    x11vnc \
 	    libwebkit2gtk-4.0-37 \
-	    dos2unix
+	    dos2unix \
+      vim
 
 RUN mkdir ~/ibcontroller.paper && \
     cd ~/ibcontroller.paper/ && \
