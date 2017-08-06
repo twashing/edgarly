@@ -40,6 +40,34 @@ docker-compose up --force-recreate --build
 - check that system is started
 - check that connection is valid
 
+## Onyx Overview
+
+[Onyx](https://github.com/onyx-platform/onyx) is a stream processing, and distributed computing framework. It takes unbounded streaming input, and routes it to different locations, based on rules that you establish.
+
+It has a distributed architecture, which uses a masterless computation system.
+
+It's configured using an information model for the description and construction of distributed workflows. These are the [core primitives](http://www.onyxplatform.org/docs/user-guide/0.10.x/#concepts ) that the Onyx uses.
+- Segment - the unit of data flowing through an Onyx cluster. Segments are the only shape of data that Onyx allows you to emit between functions.
+- Task - the smallest unit of work in Onyx, representing an activity of either input, processing, or output
+- Workflow - the structural specification of an Onyx program
+- Catalog - all inputs, outputs, and functions in a workflow must be described via a catalog
+- Flow Conditions - specifies on a segment-by-segment basis which direction data should flow determined by predicate functions
+- Function
+- Lifecycle - something that describes the lifetime of a task
+- Windows
+- Plugin
+- Sentinel
+- Peer
+- Virtual Peer
+- Job - the collection of a workflow, catalog, flow conditions, lifecycles, and execution parameters
+
+You can get a footing of how to setup and use Onyx, using [these examples](http://www.onyxplatform.org/learn/#learn-onyx).
+```
+$ git clone git@github.com:onyx-platform/onyx-examples.git
+$ cd onyx-examples
+$ less README.md
+```
+
 ## Issues
 
 ### Can't reach myMavenRepo.read or myMavenRepo.write, from inside a container

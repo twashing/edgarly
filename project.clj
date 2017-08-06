@@ -41,10 +41,7 @@
                  #_[com.datomic/datomic-pro "0.9.5561"]
                  [com.datomic/datomic-free "0.9.5561"]
 
-                 #_[com.interrupt/edgarly "0.1.2-SNAPSHOT"]
-                 [org.clojure/test.check "0.9.0"]
-                 [clojure-future-spec "1.9.0-alpha15"]
-                 [spyscope "0.1.5"]]
+                 #_[com.interrupt/edgarly "0.1.2-SNAPSHOT"]]
 
   :source-paths ["src/clojure" "test/clojure"]
   :java-source-paths ["src/java"]
@@ -53,7 +50,13 @@
                                   [org.clojure/tools.namespace "0.2.11"]
                                   [suspendable "0.1.1"]
                                   [ring-mock "0.1.5"]
-                                  [embedded-kafka "0.3.3"]]
+                                  [spyscope "0.1.5"]
+                                  #_[embedded-kafka "0.3.3"]
+
+                                  [org.clojure/test.check "0.9.0"]
+                                  [clojure-future-spec "1.9.0-alpha17"]
+                                  [plumula/mimolette "0.2.1"]
+                                  [spec-provider "0.4.9"]]
                    :resource-paths ["resources"]}}
 
   :repl-options {:init-ns user}

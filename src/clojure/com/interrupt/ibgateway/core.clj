@@ -8,9 +8,11 @@
              [clojure.string :as str]
              [clojure.core.async :refer [chan >! <! merge go go-loop pub sub unsub-all sliding-buffer]]
              [clojure.core.match :refer [match]]
-             [clojure.spec :as s]
-             [clojure.spec.gen :as sg]
-             [clojure.spec.test :as st]
+
+             [clojure.spec.alpha :as s]
+             #_[clojure.spec.alpha.gen :as sg]
+             #_[clojure.spec.alpha.test :as st]
+
              [clojure.future :refer :all]
              [com.rpl.specter :refer [transform select ALL]]
              [clojure.set :as cs]
@@ -21,9 +23,9 @@
 
 (defn system-map []
   (component/system-map
-   :nrepl (new-repl-server 7888 "0.0.0.0")  ;; useful when operating to the cloud
-   :ewrapper (new-ewrapper)
-   #_:onyx #_(new-onyx)))
+   :nrepl (new-repl-server 5554 "0.0.0.0")
+   #_:ewrapper #_(new-ewrapper)
+   :onyx (new-onyx)))
 
 (set-init! #'system-map)
 (defn start-system [] (start))
@@ -151,8 +153,8 @@
             :let [subscriber (chan)]]
 
       ;; TODO - replace with kafka + stream processing asap
-      (let [scan-var #spy/d (top-level-scan-item scan-name)
-            scan-atom #spy/d (var-get scan-var)]
+      (let [scan-var (top-level-scan-item scan-name)
+            scan-atom (var-get scan-var)]
         (ei/scanner-subscribe reqid client default-instrument default-location scan-name)
         (sub publication reqid subscriber)
         (consume-subscriber scan-atom subscriber)))
@@ -257,10 +259,15 @@
   (def or-volatility-volume-price-change
     (filter (fn [e]
               (and (> (count (:intersection e)) 1)
-                   (some #{"one" "two"} (:names e))
-                   (some #{"three" "four" "five" "six" "seven"} (:names e))
-                   (some #{"eight" "nine" "ten" "eleven"} (:names e))))
-            sorted-intersections)))
+                   (some #{"one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten" "eleven"} (:names e))
+                   #_(or (some #{"one" "two"} (:names e))
+                       (some #{"three" "four" "five" "six" "seven"} (:names e))
+                       (some #{"eight" "nine" "ten" "eleven"} (:names e)))))
+            sorted-intersections))
+
+  (clojure.pprint/pprint intersection-subsets)
+  (clojure.pprint/pprint sorted-intersections)
+  (clojure.pprint/pprint or-volatility-volume-price-change))
 
 (defn historical-start [])
 (defn historical-stop [])
@@ -274,3 +281,4 @@
   (Thread/sleep 5000) ;; a hack, to ensure that the tws machine is available, before we try to connect to it.
   (start-system))
 
+;; (reset)
