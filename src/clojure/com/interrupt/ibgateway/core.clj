@@ -24,8 +24,8 @@
 (defn system-map []
   (component/system-map
    :nrepl (new-repl-server 5554 "0.0.0.0")
-   #_:ewrapper #_(new-ewrapper)
-   :onyx (new-onyx)))
+   :ewrapper (new-ewrapper)
+   #_:onyx #_(new-onyx)))
 
 (set-init! #'system-map)
 (defn start-system [] (start))

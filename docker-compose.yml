@@ -47,7 +47,7 @@ services:
       - zookeeper
     working_dir: ${PWD}
     ports:
-      - 7888:7888
+      - 5554:5554
     volumes:
       - .:${PWD}
     entrypoint: lein with-profile +app run -m com.interrupt.ibgateway.core/-main
