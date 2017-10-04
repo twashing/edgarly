@@ -8,9 +8,13 @@
            [com.interrupt.ibgateway EWrapperImpl]
            [com.ib.client
             EWrapper EClient EClientSocket EReader EReaderSignal
-            ContractDetails ScannerSubscription]))
+            Contract ContractDetails ScannerSubscription]
+
+           [com.ib.client Types$BarSize Types$DurationUnit Types$WhatToShow]))
+
 
 (def SCANNERDATA :scanner-data)
+(def HISTORICALDATA :historical-data)
 
 (defn scanner-subscripion [instrument location-code scan-code]
   (doto (ScannerSubscription.)
@@ -27,6 +31,26 @@
 (defn scanner-unsubscribe [req-id client]
   (.cancelScannerSubscription client req-id))
 
+(defn historical-subscribe [req-id client]
+
+  (def cal (Calendar/getInstance))
+  (.add cal Calendar/DAY_OF_MONTH -16)
+  #_(.add cal Calendar/MONTH -6)
+
+  (def form (SimpleDateFormat. "yyyyMMdd HH:mm:ss"))
+  (def formatted (.format form (.getTime cal)))
+
+  (let [contract (doto (Contract.)
+                   (.symbol "TSLA")
+                   (.secType "STK")
+                   (.currency "USD")
+                   (.exchange "SMART")
+                   #_(.primaryExch "ISLAND"))]
+
+    (.reqHistoricalData client req-id contract formatted "2 W" "1 min" "MIDPOINT" 1 1 nil))
+
+  req-id)
+
 (defn ewrapper-impl [publisher]
 
   (proxy [EWrapperImpl] []
@@ -36,7 +60,8 @@
       (println "scannerParameters CALLED")
       (def scannerParameters xml))
 
-    (scannerData [reqId rank ^ContractDetails contractDetails ^String distance ^String benchmark ^String projection ^String legsStr]
+    (scannerData [reqId rank ^ContractDetails contractDetails ^String distance ^String benchmark
+                  ^String projection ^String legsStr]
 
       (let [sym (.. contractDetails contract symbol)
             sec-type (.. contractDetails contract secType)
@@ -62,6 +87,41 @@
                       :message-end true}]
 
         #_(println (str "ScannerDataEnd CALLED / reqId: " reqId))
+
+        (go (>! publisher ch-value))))
+
+
+    ;; public void historicalData(int reqId, String date, double open,
+    ;;                             double high, double low, double close, int volume, int count,
+    ;;                             double WAP, boolean hasGaps) {
+    ;;                                                           System.out.println("HistoricalData. "+reqId+" - Date: "+date+", Open: "+open+", High: "+high+", Low: "+low+", Close: "+close+", Volume: "+volume+", Count: "+count+", WAP: "+WAP+", HasGaps: "+hasGaps);
+    ;;                                                           }
+
+    (historicalData [reqId ^String date open high low close
+                     volume count WAP  hasGaps]
+
+      (let [ch-value {:topic HISTORICALDATA
+                      :req-id reqId
+                      :date date
+                      :open open
+                      :high high
+                      :low low
+                      :close close
+                      :volume volume
+                      :count count
+                      :wap WAP
+                      :has-gaps hasGaps}]
+
+        (println "2. HistoricalData." reqId
+                 " - Date: " date
+                 ", Open: " open
+                 ", High: " high
+                 ", Low: " low
+                 ", Close: " close
+                 ", Volume: " volume
+                 ", Count: " count
+                 ", WAP: " WAP
+                 ", HasGaps: " hasGaps)
 
         (go (>! publisher ch-value))))))
 
@@ -113,7 +173,15 @@
   (def form (SimpleDateFormat. "yyyyMMdd HH:mm:ss"))
   (def formatted (.format form (.getTime cal)))
 
-  (.reqHistoricalData client 4001 (ContractSamples/EurGbpFx) formatted "1 M" "1 day" "MIDPOINT" 1 1 nil)
+  (let [contract (doto (Contract.)
+                   (.symbol "TSLA")
+                   (.secType "STK")
+                   (.currency "USD")
+                   (.exchange "SMART"))]
+
+    (.reqHistoricalData client 4002 contract formatted "2 W" "1 sec" "MIDPOINT" 1 1 nil))
+
+  (.reqHistoricalData client 4001 (ContractSamples/EurGbpFx) formatted "2 W" "1 sec" "MIDPOINT" 1 1 nil)
   (.reqHistoricalData client 4002 (ContractSamples/USStockWithPrimaryExch) formatted "1 M" "1 day" "MIDPOINT" 1 1 nil)
 
   ;; private static void marketScanners(EClientSocket client) throws InterruptedException
@@ -218,6 +286,24 @@
   (scanner-subscribe 10 client default-instrument default-location "TOP_PRICE_RANGE")
   (scanner-subscribe 11 client default-instrument default-location "HOT_BY_PRICE_RANGE")
 
+
+  (let [req-id 12
+        ^Contract contract  ;; ...
+        ^String endDateTime  ;; ...
+        duration 2
+        ^Types$BarSize barSize  ;; ...
+        ^Types$WhatToShow whatToShow  ;; ...
+        rthOnly true]
+
+    (historical-subscribe [req-id
+                           client
+                           contract
+                           endDateTime
+                           duration
+                           ;; ^Types$DurationUnit durationUnit
+                           barSize
+                           whatToShow
+                           rthOnly]))
 
   ;; Subscribe
   (def publication

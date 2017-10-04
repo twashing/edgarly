@@ -41,7 +41,9 @@
                  #_[com.datomic/datomic-pro "0.9.5561"]
                  [com.datomic/datomic-free "0.9.5561"]
 
-                 #_[com.interrupt/edgarly "0.1.2-SNAPSHOT"]]
+                 #_[com.interrupt/edgarly "0.1.2-SNAPSHOT"]
+
+                 [org.clojure/data.json "0.2.6"]]
 
   :source-paths ["src/clojure" "test/clojure"]
   :java-source-paths ["src/java"]

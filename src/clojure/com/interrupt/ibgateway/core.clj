@@ -18,7 +18,13 @@
              [clojure.set :as cs]
              [clojure.math.combinatorics :as cmb]
              [clojure.pprint :refer [pprint]])
-  (:import [java.util.concurrent TimeUnit]))
+  (:import [java.util.concurrent TimeUnit]
+           [java.util Calendar]
+           [java.text SimpleDateFormat]
+           [com.ib.client
+            EWrapper EClient EClientSocket EReader EReaderSignal
+            Contract ContractDetails ScannerSubscription]
+           [com.ib.client Types$BarSize Types$DurationUnit Types$WhatToShow]))
 
 
 (defn system-map []
@@ -163,6 +169,24 @@
 
 (defn scanner-stop [])
 
+
+(defn consume-subscriber-historical [historical-atom subscriber-chan]
+  (go-loop [r1 nil]
+
+    (let [{:keys [req-id date open high low close volume count wap has-gaps] :as val} r1]
+      (swap! historical-atom assoc date val))
+    (recur (<! subscriber-chan))))
+
+(defn historical-start [req-id client publication historical-atom]
+
+  (let [subscriber (chan)]
+    (ei/historical-subscribe req-id client)
+    (sub publication req-id subscriber)
+    (consume-subscriber-historical historical-atom subscriber)))
+
+(defn historical-stop [])
+
+
 (comment
 
   ;; TODO
@@ -178,7 +202,44 @@
 
   (def scanner-subscriptions (scanner-start client publication config))
 
+  (def historical-atom (atom {}))
+  (def historical-subscriptions (historical-start 4002 client publication historical-atom))
+
+  ;; ====
+  ;; Requesting historical data
+
+  ;; (def cal (Calendar/getInstance))
+  ;; #_(.add cal Calendar/MONTH -6)
+  ;;
+  ;; (def form (SimpleDateFormat. "yyyyMMdd HH:mm:ss"))
+  ;; (def formatted (.format form (.getTime cal)))
+  ;;
+  ;; (let [contract (doto (Contract.)
+  ;;                  (.symbol "TSLA")
+  ;;                  (.secType "STK")
+  ;;                  (.currency "USD")
+  ;;                  (.exchange "SMART")
+  ;;                  #_(.primaryExch "ISLAND"))]
+  ;;
+  ;;   (.reqHistoricalData client 4002 contract formatted "4 W" "1 min" "MIDPOINT" 1 1 nil))
+
+
   (pprint scanner-subscriptions)
+  (pprint historical-atom)
+
+
+  ;; 1. write to edn
+  #_(spit "tesla-historical-20170901-20170915.edn" @historical-atom)
+  (spit "tesla-historical-20170819-20170829.edn" @historical-atom)
+
+  ;; 2. write to json
+  (require '[clojure.data.json :as json])
+  #_(spit "tesla-historical-20170901-20170915.json" (json/write-str (remove (fn [[k v]]
+                                                                              (nil? k))
+                                                                            @historical-atom)))
+  (spit "tesla-historical-20170819-20170829.json" (json/write-str (remove (fn [[k v]]
+                                                                            (nil? k))
+                                                                          @historical-atom)))
 
   (pprint high-opt-imp-volat)
   (pprint high-opt-imp-volat-over-hist)
@@ -269,8 +330,6 @@
   (clojure.pprint/pprint sorted-intersections)
   (clojure.pprint/pprint or-volatility-volume-price-change))
 
-(defn historical-start [])
-(defn historical-stop [])
 
 (defn market-start [])
 (defn market-stop [])
