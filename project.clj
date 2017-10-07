@@ -17,7 +17,7 @@
                  [clj-time "0.9.0"]
                  ;; end explicit versions of deps that would cause transitive dep conflicts
 
-                 #_[org.clojure/tools.logging "0.3.1"]
+                 [org.clojure/tools.logging "0.3.1"]
                  [aero "1.1.2"]
                  [com.stuartsierra/component "0.3.2"]
                  [org.danielsz/system "0.4.1-SNAPSHOT"]

@@ -47,7 +47,7 @@
                    (.exchange "SMART")
                    #_(.primaryExch "ISLAND"))]
 
-    (.reqHistoricalData client req-id contract formatted "2 W" "1 min" "MIDPOINT" 1 1 nil))
+    (.reqHistoricalData client req-id contract formatted "2 W" "1 min" "TRADES" 1 1 nil))
 
   req-id)
 

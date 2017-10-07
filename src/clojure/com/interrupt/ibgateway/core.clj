@@ -201,6 +201,7 @@
     (pub publisher #(:req-id %)))
 
   (def scanner-subscriptions (scanner-start client publication config))
+  (pprint scanner-subscriptions)
 
   (def historical-atom (atom {}))
   (def historical-subscriptions (historical-start 4002 client publication historical-atom))
@@ -224,22 +225,32 @@
   ;;   (.reqHistoricalData client 4002 contract formatted "4 W" "1 min" "MIDPOINT" 1 1 nil))
 
 
-  (pprint scanner-subscriptions)
-  (pprint historical-atom)
+  (require '[clojure.string :as str])
 
+  (pprint (take 6 (->> @historical-atom
+                       (sort-by first)
+                       reverse
+                       (remove (fn [[k {:keys [date] :as v}]]
+                                 (or (nil? k)
+                                     (str/starts-with? date "finished-")))))))
+
+  (def historical-final (->> @historical-atom
+                             (sort-by first)
+                             (remove (fn [[k {:keys [date] :as v}]]
+                                       (or (nil? k)
+                                           (str/starts-with? date "finished-"))))))
+
+
+  (pprint (take 7 historical-final))
 
   ;; 1. write to edn
   #_(spit "tesla-historical-20170901-20170915.edn" @historical-atom)
-  (spit "tesla-historical-20170819-20170829.edn" @historical-atom)
+  (spit "tesla-historical-20170819-20170829.edn" (pr-str historical-final))
 
   ;; 2. write to json
   (require '[clojure.data.json :as json])
-  #_(spit "tesla-historical-20170901-20170915.json" (json/write-str (remove (fn [[k v]]
-                                                                              (nil? k))
-                                                                            @historical-atom)))
-  (spit "tesla-historical-20170819-20170829.json" (json/write-str (remove (fn [[k v]]
-                                                                            (nil? k))
-                                                                          @historical-atom)))
+  (spit "tesla-historical-20170819-20170829.json" (json/write-str historical-final))
+
 
   (pprint high-opt-imp-volat)
   (pprint high-opt-imp-volat-over-hist)
