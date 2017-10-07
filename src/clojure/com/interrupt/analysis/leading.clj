@@ -118,8 +118,8 @@
   (let [;; calculate %K
         stochastic-list (reduce (fn [rslt ech]
 
-                                  (let [last-time (:date (first ech))
-                                        last-price (:close (first ech))
+                                  (let [last-time (:date (last ech))
+                                        last-price (:close (last ech))
                                         last-price-list (map #(if (string? (:close %))
                                                                 (read-string (:close %))
                                                                 (:close %)) ech)
@@ -132,13 +132,14 @@
                                              (catch Exception e
                                                0))]
 
-                                    (cons {:close last-price
-                                           :date last-time
-                                           :highest-price highest-price
-                                           :lowest-price lowest-price
-                                           :K %K} rslt)))
-                                (into '() (repeat tick-window nil))
-                                (reverse (partition tick-window 1 tick-list)))
+                                    (concat (into [] rslt)
+                                            [{:close last-price
+                                              :date last-time
+                                              :highest-price highest-price
+                                              :lowest-price lowest-price
+                                              :K %K}])))
+                                []
+                                (partition tick-window 1 tick-list))
 
         ;; ... TODO - should %D be a simple moving average of %K (instead of exponential moving average)
 
@@ -150,7 +151,10 @@
                                         :output :D
                                         :etal [:date :close :highest-price :lowest-price :K]}
                                        3 nil ech)]
-                           (cons (first e-list) rslt)))
-                       (into '() (repeat tick-window nil))
-                       (reverse (partition trigger-window 1 (remove nil? stochastic-list))))]
+
+                           ;;(println (take 5 e-list))
+                           (concat (into [] rslt)
+                                   [(last e-list)])))
+                       []
+                       (partition trigger-window 1 stochastic-list))]
     d-list))

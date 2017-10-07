@@ -166,6 +166,7 @@
   (def result-macd (led/macd nil 40 tick-list-distilled result-simple-moving-average))
   (def result-stochastic-oscillator (led/stochastic-oscillator 14 3 3 tick-list-distilled))
 
+
   (clojure.pprint/pprint (take 2 result-macd))
   (clojure.pprint/pprint (take 2 result-stochastic-oscillator))
 
@@ -173,10 +174,10 @@
   ;; == CONFIRMING
   (require '[com.interrupt.analysis.confirming :as cnf])
 
-  #_(def result-on-balance-volume (cnf/on-balance-volume [latest-tick tick-list]))
+  (def result-on-balance-volume (cnf/on-balance-volume nil tick-list-distilled))
   (def result-relative-strength-index (cnf/relative-strength-index 40 tick-list-distilled))
 
-  #_(clojure.pprint/pprint (take 2 result-on-balance-volume))
+  (clojure.pprint/pprint (take 20 result-on-balance-volume))
   (clojure.pprint/pprint (take 2 result-relative-strength-index))
 
 

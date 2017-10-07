@@ -22,18 +22,12 @@
   ;; accumulate OBV on historical tick-list
   (let [obv-list (reduce (fn [rslt ech]
 
-                           (if-let [prev-obv (:obv (first rslt))]    ;; handling case where first will not have an OBV
+                           (if-let [prev-obv (:obv (last rslt))]    ;; handling case where first will not have an OBV
 
                              ;; normal case
-                             (let [current-price (if (string? (:close (first ech)))
-                                                   (read-string (:close (first ech)))
-                                                   (:close (first ech)))
-                                   prev-price (if (string? (:close (second ech)))
-                                                (read-string (:close (second ech)))
-                                                (:close (second ech)))
-                                   current-volume (if (string? (:total-volume (first ech)))
-                                                    (read-string (:total-volume (first ech)))
-                                                    (:total-volume (first ech)))
+                             (let [current-price (:close (last ech))
+                                   prev-price (:close (last (butlast ech)))
+                                   current-volume (:volume (first ech))
 
                                    obv (if (= current-price prev-price)
                                          prev-obv
@@ -41,32 +35,28 @@
                                            (+ prev-obv current-volume)
                                            (- prev-obv current-volume)))]
 
-                               (cons {:obv obv
-                                      :total-volume (:total-volume (first ech))
-                                      :close (:close (first ech))
-                                      :date (:date (first ech))} rslt))
+                               (concat (into [] rslt)
+                                       [{:obv obv
+                                         :volume (:volume (last ech))
+                                         :close (:close (last ech))
+                                         :date (:date (last ech))}]))
 
                              ;; otherwise we seed the list with the first entry
-                             (cons {:obv (:total-volume (first ech))
-                                    :total-volume (:total-volume (first ech))
-                                    :close (:close (first ech))
-                                    :date (:date (first ech))} rslt)))
+                             (concat (into [] rslt)
+                                     [{:obv (:volume (last ech))
+                                       :volume (:volume (last ech))
+                                       :close (:close (last ech))
+                                       :date (:date (last ech))}])))
                          '(nil)
-                         (->> tick-list (partition 2 1) reverse))]
+                         (partition 2 1 tick-list))]
 
     ;; calculate OBV for latest tick
     (if latest-tick
 
-      (let [cprice (if (string? (:close latest-tick))
-                     (read-string (:close latest-tick))
-                     (:close latest-tick))
-            pprice (if (string? (:close (first obv-list)))
-                     (read-string (:close (first obv-list)))
-                     (:close (first obv-list)))
-            cvolume (if (string? (:total-volume latest-tick))
-                      (read-string (:total-volume latest-tick))
-                      (:total-volume latest-tick))
-            pobv (:obv (first obv-list))
+      (let [cprice (:close latest-tick)
+            pprice (:close (last obv-list))
+            cvolume (:volume latest-tick)
+            pobv (:obv (last obv-list))
 
             cobv (if (= cprice pprice)
                    pobv
@@ -74,10 +64,11 @@
                      (+ pobv cvolume)
                      (- pobv cvolume)))]
 
-        (cons {:obv cobv
-               :total-volume (:total-volume latest-tick)
-               :close (:close latest-tick)
-               :date (:date latest-tick)} obv-list))
+        (concat (into [] obv-list)
+                [{:obv cobv
+                  :volume (:volume latest-tick)
+                  :close (:close latest-tick)
+                  :date (:date latest-tick)}]))
       obv-list)))
 
 (defn relative-strength-index
@@ -97,7 +88,7 @@
               ;; each item will be a population of tick-window (default of 14)
               (let [pass-one (reduce (fn [rslt ech]
 
-                                       (let [fst (:close (first ech))
+                                       (let [fst (:close (last ech))
                                              snd (:close (second ech))
 
                                              up? (> fst snd)
@@ -106,9 +97,9 @@
 
                                          (if (or up? down?)
                                            (if up?
-                                             (conj rslt (assoc (first ech) :signal :up))
-                                             (conj rslt (assoc (first ech) :signal :down)))
-                                           (conj rslt (assoc (first ech) :signal :sideways)))))
+                                             (concat (into [] rslt) [(assoc (last ech) :signal :up)])
+                                             (concat (into [] rslt) [(assoc (last ech) :signal :down)]))
+                                           (concat (into [] rslt) [(assoc (last ech) :signal :sideways)]))))
                                      []
                                      (partition 2 1 (remove nil? ech)))
 
@@ -128,9 +119,10 @@
                          0)
                     rsi (- 100 (/ 100 (+ 1 rs)))]
 
-                (conj rslt {:date (:date (first ech))
-                            :close (:close (first ech))
-                            :rs rs
-                            :rsi rsi})))
+                (concat (into [] rslt)
+                        [{:date (:date (last ech))
+                          :close (:close (last ech))
+                          :rs rs
+                          :rsi rsi}])))
             []
             window-list)))
