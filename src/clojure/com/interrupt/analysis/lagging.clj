@@ -31,7 +31,7 @@
 
                           ;; will produce a map of etal-keys, with associated values in ech
                           (zipmap etal-keys
-                                  (map #(% (first ech)) etal-keys))
+                                  (map #(% (last ech)) etal-keys))
 
                           ;; and merge the output key to the map
                           {output-key taverage
@@ -138,15 +138,11 @@
 
   ;; == LAGGING (open, close, high, low)
 
-  ;; ** CRITICAL to reverse the ticklist
   (def tick-list-distilled (map second tick-list))
 
-  (def result-simple-moving-average
-    (simple-moving-average nil 40 tick-list-distilled))
-  (def result-exponential-moving-average
-    (exponential-moving-average nil 40 tick-list-distilled result-simple-moving-average))
-  (def result-bollinger-band
-    (bollinger-band 40 tick-list-distilled))
+  (def result-simple-moving-average (simple-moving-average nil 40 tick-list-distilled))
+  (def result-exponential-moving-average (exponential-moving-average nil 40 tick-list-distilled result-simple-moving-average))
+  (def result-bollinger-band (bollinger-band 40 tick-list-distilled))
 
   (clojure.pprint/pprint (take 4 tick-list-distilled))
   (clojure.pprint/pprint (first result-simple-moving-average))
@@ -184,32 +180,46 @@
   (def tick-list-with-analytics
     (map (fn [tl
 
-             {close-average :close-average}
-             {close-exponential :close-exponential}
-             {upper-band :upper-band lower-band :lower-band}
+             {close-average :close-average simple-date :date}
+             {close-exponential :close-exponential exponential-date :date}
+             {upper-band :upper-band lower-band :lower-band bollinger-date :date}
 
-             {close-macd :close-macd ema-signal :ema-signal histogram :histogram}
-             {highest-price :highest-price lowest-price :lowest-price K :K D :D}
+             {close-macd :close-macd ema-signal :ema-signal histogram :histogram macd-date :date}
+             {highest-price :highest-price lowest-price :lowest-price stochastic-oscillator-date :date K :K D :D}
 
-             {rs :rs rsi :rsi}]
+             {obv :obv volume :volume obv-date :date}
+             {rs :rs rsi :rsi rsi-date :date}]
 
-           {:nominal tl
-            :lagging {:close-average close-average
-                      :close-exponential close-exponential
-                      :upper-band upper-band
-                      :lower-band lower-band}
+           {:nominal/nominal tl
 
-            :leading {:close-macd close-macd
-                      :ema-signal ema-signal
-                      :histogram histogram
+            :lagging/simple-moving-average {:date simple-date
+                                            :close-average close-average}
 
-                      :highest-price highest-price
-                      :lowest-price lowest-price
-                      :K K
-                      :D D}
+            :lagging/exponential-moving-average {:date exponential-date
+                                                 :close-exponential close-exponential}
 
-            :confirming {:rs rs
-                         :rsi rsi}})
+            :lagging/bollinger-band {:date bollinger-date
+                                     :upper-band upper-band
+                                     :lower-band lower-band}
+
+            :leading/macd {:date macd-date
+                           :close-macd close-macd
+                           :ema-signal ema-signal
+                           :histogram histogram}
+
+            :leading/stochastic-oscillator {:date stochastic-oscillator-date
+                                            :highest-price highest-price
+                                            :lowest-price lowest-price
+                                            :K K
+                                            :D D}
+
+            :confirming/on-balance-volume {:date obv-date
+                                           :obv obv
+                                           :volume volume}
+
+            :confirming/relative-strength-index {:date rsi-date
+                                                 :rs rs
+                                                 :rsi rsi}})
 
          tick-list-distilled
 
@@ -219,14 +229,53 @@
 
          result-macd
          result-stochastic-oscillator
-         #_result-on-balance-volume
+         result-on-balance-volume
          result-relative-strength-index))
 
+  (clojure.pprint/pprint (first tick-list-with-analytics))
+
+  (require '[clojure.data.json :as json])
+  (spit "tesla-historical-20170819-20170829-with-analytics.edn" (pr-str tick-list-with-analytics))
+  (spit "tesla-historical-20170819-20170829-with-analytics.json" (json/write-str tick-list-with-analytics))
+
+
+  (require '[com.interrupt.signal.lagging :as slag])
+
+
+  (clojure.pprint/pprint (first tick-list-distilled))
+  (clojure.pprint/pprint (first result-simple-moving-average))
+  (clojure.pprint/pprint (first result-exponential-moving-average))
+
+  (def grouped-lagging-analytics (remove (fn [x]
+                                           (< (count (second x)) 3))
+                                         (sort-by first
+                                                  (group-by :date (concat tick-list-distilled result-simple-moving-average result-exponential-moving-average)))))
+
+  (clojure.pprint/pprint (first grouped-lagging-analytics))
+  (clojure.pprint/pprint (take 20 (map first grouped-lagging-analytics)))
+
+
+  (def lagging-tick-list (map (comp first second) grouped-lagging-analytics))
+  (def lagging-simple-list (map (comp second second) grouped-lagging-analytics))
+  (def lagging-exponential-list (map (fn [x] (nth (second x) 2))
+                                     grouped-lagging-analytics))
+
+  (clojure.pprint/pprint (take 6 lagging-tick-list))
+  (clojure.pprint/pprint (take 6 lagging-simple-list))
+  (clojure.pprint/pprint (take 6 lagging-exponential-list))
+
+
+  (def result-moving-average-signals
+    (slag/moving-averages 40 lagging-tick-list lagging-simple-list lagging-exponential-list))
+
   (clojure.pprint/pprint
-   (first tick-list-with-analytics))
+   (filter :signals (slag/moving-averages 40 lagging-tick-list lagging-simple-list lagging-exponential-list)))
+
+  (clojure.pprint/pprint
+   (take 100 (slag/join-averages 40 lagging-tick-list lagging-simple-list lagging-exponential-list)))
 
 
-  (def one (map
+  #_(def one (map
 
             (fn [x]
               {:close (-> x :nominal :close)
@@ -234,9 +283,8 @@
                :lagging (:lagging x)})
 
             tick-list-with-analytics))
+  #_(clojure.pprint/pprint (take 10 one))
+  #_(take 10 tick-list-distilled)
 
-  (clojure.pprint/pprint (take 10 one))
-
-  (take 10 tick-list-distilled)
 
   )

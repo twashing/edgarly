@@ -8,7 +8,7 @@
 (defn join-averages
   "Create a list where i) tick-list ii) sma-list and iii) ema-list are overlaid.
 
-   ** This function assumes the latest tick is on the left**"
+   ** This function assumes the latest tick is on the right **"
 
   ([tick-window tick-list]
 
@@ -26,9 +26,7 @@
                    (= (:date titem) (:date sitem) (:date eitem)))
 
             {:date (:date titem)
-             :close (if (string? (:close titem))
-                      (read-string (:close titem))
-                      (:close titem))
+             :close (:close titem)
              :close-average (:close-average sitem)
              :close-exponential (:close-exponential eitem)}
 
@@ -37,7 +35,6 @@
         tick-list
         sma-list
         ema-list)))
-
 
 (defn moving-averages
   "Takes baseline time series, along with 2 other moving averages.
@@ -57,47 +54,49 @@
 
    ;; create a list where i) tick-list ii) sma-list and iii) ema-list are overlaid
    (let [joined-list (join-averages tick-window tick-list sma-list ema-list)
-         partitioned-join (partition 2 1 (remove nil? joined-list))
-         start-list (into '() (repeat tick-window nil))]
+         partitioned-join (partition 2 1 joined-list)
+         start-list []
+         ;; start-list (into '() (repeat tick-window nil))
+         ]
 
 
      ;; find time points where ema-list (or second list) crosses over the sma-list (or 1st list)
      (reduce (fn [rslt ech]
 
                (let [fst (first ech)
+
                      snd (second ech)
 
-                     ;; in the first element, has the ema crossed abouve the sma from the second element
-                     signal-up (and (< (:close-exponential snd) (:close-average snd))
-                                    (> (:close-exponential fst) (:close-average fst)))
+                     ;; in the latest element, has the ema crossed abouve the sma from the previous element
+                     signal-up (and (> (:close-exponential snd) (:close-average snd))
+                                           (< (:close-exponential fst) (:close-average fst)))
 
                      ;; in the first element, has the ema crossed below the sma from the second element
-                     signal-down (and (> (:close-exponential snd) (:close-average snd))
-                                      (< (:close-exponential fst) (:close-average fst)))
+                     signal-down (and (< (:close-exponential snd) (:close-average snd))
+                                      (> (:close-exponential fst) (:close-average fst)))
 
-                     raw-data fst
-                     ]
+                     raw-data fst]
 
                  ;; return either i) :up signal, ii) :down signal or iii) nothing, with just the raw data
                  (if signal-up
-                   (cons (assoc raw-data :signals [{:signal :up
-                                                    :why :moving-average-crossover
-                                                    :arguments [fst snd]}]) rslt)
+                   (concat (into [] rslt)
+                           [(assoc raw-data :signals [{:signal :up
+                                                       :why :moving-average-crossover
+                                                       :arguments [fst snd]}])])
                    (if signal-down
-                     (cons (assoc raw-data :isgnals [{:signal :down
-                                                      :why :moving-average-crossover
-                                                      :arguments [fst snd]}]) rslt)
-                     (cons raw-data rslt)))))
+                     (concat (into [] rslt)
+                             [(assoc raw-data :signals [{:signal :down
+                                                         :why :moving-average-crossover
+                                                         :arguments [fst snd]}])])
+                     (concat (into [] rslt)
+                             [raw-data])))))
              start-list
-             (reverse partitioned-join)))))
-
-
+             partitioned-join))))
 
 (defn sort-bollinger-band [bband]
   (let [diffs (map (fn [inp] (assoc inp :difference (- (:upper-band inp) (:lower-band inp))))
                    (remove nil? bband))]
     (sort-by :difference diffs)))
-
 
 (defn bollinger-band
 
