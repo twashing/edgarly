@@ -91,6 +91,7 @@
              []
              sma-list))))
 
+
 (defn bollinger-band
 
   ([tick-window tick-list]
@@ -133,7 +134,8 @@
            '[clojure.java.io :as io]
            '[spyscope.core])
 
-  (def tick-list (edn/read-string (slurp (io/resource "tesla-historical-20170819-20170829.edn"))))
+  #_(def tick-list (edn/read-string (slurp (io/resource "tesla-historical-20170819-20170829.edn"))))
+  (def tick-list (edn/read-string (slurp (io/resource "tesla-historical-20170601-20170928.edn"))))
 
 
   ;; == LAGGING (open, close, high, low)
@@ -162,7 +164,6 @@
   (def result-macd (led/macd nil 40 tick-list-distilled result-simple-moving-average))
   (def result-stochastic-oscillator (led/stochastic-oscillator 14 3 3 tick-list-distilled))
 
-
   (clojure.pprint/pprint (take 2 result-macd))
   (clojure.pprint/pprint (take 2 result-stochastic-oscillator))
 
@@ -190,8 +191,11 @@
              {obv :obv volume :volume obv-date :date}
              {rs :rs rsi :rsi rsi-date :date}]
 
-           {:nominal/nominal tl
+           {;; NOMINAL
+            :nominal/nominal tl
 
+
+            ;; LAGGING
             :lagging/simple-moving-average {:date simple-date
                                             :close-average close-average}
 
@@ -202,6 +206,7 @@
                                      :upper-band upper-band
                                      :lower-band lower-band}
 
+            ;; LEADING
             :leading/macd {:date macd-date
                            :close-macd close-macd
                            :ema-signal ema-signal
@@ -213,6 +218,7 @@
                                             :K K
                                             :D D}
 
+            ;; CONFIRMING
             :confirming/on-balance-volume {:date obv-date
                                            :obv obv
                                            :volume volume}
@@ -232,59 +238,131 @@
          result-on-balance-volume
          result-relative-strength-index))
 
-  (clojure.pprint/pprint (first tick-list-with-analytics))
+  (clojure.pprint/pprint (take 3 tick-list-with-analytics))
 
+  ;; Writing out with ANALYTICS
   (require '[clojure.data.json :as json])
-  (spit "tesla-historical-20170819-20170829-with-analytics.edn" (pr-str tick-list-with-analytics))
-  (spit "tesla-historical-20170819-20170829-with-analytics.json" (json/write-str tick-list-with-analytics))
+  (spit "tesla-historical-20170601-20170928-with-analytics.edn" (pr-str tick-list-with-analytics))
+  (spit "tesla-historical-20170601-20170928-with-analytics.json" (json/write-str tick-list-with-analytics))
 
 
-  (require '[com.interrupt.signal.lagging :as slag])
+  ;; == SIGNALS - Grouping analytics by time
+  (require '[com.interrupt.signal.lagging :as slag]
+           '[com.interrupt.signal.leading :as slead]
+           '[com.interrupt.signal.confirming :as sconf])
 
 
-  (clojure.pprint/pprint (first tick-list-distilled))
-  (clojure.pprint/pprint (first result-simple-moving-average))
-  (clojure.pprint/pprint (first result-exponential-moving-average))
+  (def grouped-analytics
+    (remove (fn [x]
+              (< (count (second x)) 4))
+            (sort-by first
+                     (group-by :date (concat tick-list-distilled
+                                             result-simple-moving-average
+                                             result-exponential-moving-average
 
-  (def grouped-lagging-analytics (remove (fn [x]
-                                           (< (count (second x)) 3))
-                                         (sort-by first
-                                                  (group-by :date (concat tick-list-distilled result-simple-moving-average result-exponential-moving-average)))))
+                                             result-on-balance-volume
+                                             result-bollinger-band
+                                             result-macd
+                                             result-stochastic-oscillator
+                                             result-relative-strength-index)))))
 
-  (clojure.pprint/pprint (first grouped-lagging-analytics))
-  (clojure.pprint/pprint (take 20 (map first grouped-lagging-analytics)))
+  (clojure.pprint/pprint (take 20 (map first grouped-analytics)))
+  (clojure.pprint/pprint (first grouped-analytics))
 
 
-  (def lagging-tick-list (map (comp first second) grouped-lagging-analytics))
-  (def lagging-simple-list (map (comp second second) grouped-lagging-analytics))
-  (def lagging-exponential-list (map (fn [x] (nth (second x) 2))
-                                     grouped-lagging-analytics))
+  (def lagging-tick-list (map (comp first second) grouped-analytics))
+
+  (def lagging-simple-list (map (comp second second) grouped-analytics))
+
+  (def lagging-exponential-list (map (fn [x] (nth (second x) 2)) grouped-analytics))
+
+  (def lagging-bollinger-list (map (fn [x] (nth (second x) 4)) grouped-analytics))
+
+  (def confirming-volume-list (map (fn [x] (nth (second x) 3)) grouped-analytics))
+
+  (def leading-macd-list (map (fn [x] (nth (second x) 5)) grouped-analytics))
+  (def leading-stochastic-oscillator-list (map (fn [x] (nth (second x) 6)) grouped-analytics))
+  (def confirming-relative-strength-list (map (fn [x] (nth (second x) 7)) grouped-analytics))
 
   (clojure.pprint/pprint (take 6 lagging-tick-list))
   (clojure.pprint/pprint (take 6 lagging-simple-list))
   (clojure.pprint/pprint (take 6 lagging-exponential-list))
+  (clojure.pprint/pprint (take 6 lagging-bollinger-list))
+  (clojure.pprint/pprint (take 6 confirming-volume-list))
+  (clojure.pprint/pprint (take 6 leading-macd-list))
+  (clojure.pprint/pprint (take 6 leading-stochastic-oscillator-list))
+  (clojure.pprint/pprint (take 6 confirming-relative-strength-list))
 
 
+  ;; == SIGNALS
   (def result-moving-average-signals
     (slag/moving-averages 40 lagging-tick-list lagging-simple-list lagging-exponential-list))
 
-  (clojure.pprint/pprint
-   (filter :signals (slag/moving-averages 40 lagging-tick-list lagging-simple-list lagging-exponential-list)))
+  (def result-bollinger-band-signals
+    (slag/bollinger-band 40 lagging-tick-list lagging-simple-list lagging-bollinger-list))
 
-  (clojure.pprint/pprint
-   (take 100 (slag/join-averages 40 lagging-tick-list lagging-simple-list lagging-exponential-list)))
-
-
-  #_(def one (map
-
-            (fn [x]
-              {:close (-> x :nominal :close)
-               :date (-> x :nominal :date)
-               :lagging (:lagging x)})
-
-            tick-list-with-analytics))
-  #_(clojure.pprint/pprint (take 10 one))
-  #_(take 10 tick-list-distilled)
+  (def result-confirming-volume-list
+    (sconf/on-balance-volume 40 lagging-tick-list confirming-volume-list))
 
 
-  )
+  slead/macd-cross-abouve?
+  slead/macd-cross-below?
+  slead/macd-signal-crossover
+  slead/macd-divergence
+  slead/macd
+  slead/is-overbought?
+  slead/is-oversold?
+  slead/stochastic-level
+  slead/k-crosses-abouve?
+  slead/k-crosses-below?
+  slead/stochastic-crossover
+  slead/stochastic-divergence
+  slead/stochastic-oscillator
+
+
+  (clojure.pprint/pprint (take 5 (filter :signals result-moving-average-signals)))
+  (clojure.pprint/pprint (take 5 result-moving-average-signals))
+
+  (clojure.pprint/pprint (take 5 result-bollinger-band-signals))
+
+  (clojure.pprint/pprint (take 5 (filter :signals result-confirming-volume-list)))
+  (clojure.pprint/pprint (take 5 result-confirming-volume-list))
+
+
+  (def grouped-list-with-analytics-and-signals
+    (map (fn [moving-average bollinger-band balance-volume macd-list stochastic-list]
+
+           (let [signals (remove nil?
+                                 (flatten (map :signals [moving-average bollinger-band balance-volume])))
+                 merged-object (merge moving-average
+                                      bollinger-band
+                                      balance-volume
+                                      macd-list
+                                      stochastic-list)
+
+                 object-with-signals (if (not (empty? signals))
+                                       (reduce (fn [acc ech]
+                                                 (assoc acc
+                                                        (keyword (str "signal-" (name (:why ech))))
+                                                        (:signal ech)))
+                                               merged-object
+                                               signals)
+                                       merged-object)]
+
+             (dissoc object-with-signals :signals)))
+
+         result-moving-average-signals
+         lagging-bollinger-list
+         result-confirming-volume-list
+
+         leading-macd-list
+         leading-stochastic-oscillator-list))
+
+  (clojure.pprint/pprint (take 200 grouped-list-with-analytics-and-signals))
+  #_(clojure.pprint/pprint (take 10 (filter :signals grouped-list-with-analytics-and-signals)))
+
+  ;; Writing out with SIGNALS
+  (require '[clojure.data.json :as json])
+  (spit "tesla-historical-20170601-20170928-with-signals.edn" (pr-str grouped-list-with-analytics-and-signals))
+  (spit "tesla-historical-20170601-20170928-with-signals.json" (json/write-str grouped-list-with-analytics-and-signals)))
+

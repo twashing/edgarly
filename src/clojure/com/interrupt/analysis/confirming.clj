@@ -27,7 +27,7 @@
                              ;; normal case
                              (let [current-price (:close (last ech))
                                    prev-price (:close (last (butlast ech)))
-                                   current-volume (:volume (first ech))
+                                   current-volume (:volume (last ech))
 
                                    obv (if (= current-price prev-price)
                                          prev-obv

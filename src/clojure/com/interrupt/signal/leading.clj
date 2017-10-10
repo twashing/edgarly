@@ -9,6 +9,7 @@
   [fst snd]
   (and (< (:close-macd snd) (:ema-signal snd))
        (> (:close-macd fst) (:ema-signal snd))))
+
 (defn macd-cross-below?
   "** This function assumes the latest tick is on the left**"
   [fst snd]
@@ -86,7 +87,6 @@
 
     divergence-macd))
 
-
 (defn macd
   "This functions searches for signals to overlay on top of a regular MACD time series. It uses the following strategies
 
@@ -157,8 +157,10 @@
 
 (defn is-overbought? [level ech]
   (> (:K ech) level))
+
 (defn is-oversold? [level ech]
   (< (:K ech) level))
+
 (defn stochastic-level
   "** This function assumes the latest tick is on the left**"
   [stochastic-list]
@@ -190,11 +192,13 @@
   [fst snd]
   (and (< (:K snd) (:D snd))
        (> (:K fst) (:D fst))))
+
 (defn k-crosses-below?
   "** This function assumes the latest tick is on the left**"
   [fst snd]
   (and (> (:K snd) (:D snd))
        (< (:K fst) (:D fst))))
+
 (defn stochastic-crossover
   "** This function assumes the latest tick is on the left**"
   [partitioned-stochastic]

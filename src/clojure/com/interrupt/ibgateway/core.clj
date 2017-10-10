@@ -229,7 +229,6 @@
 
   (pprint (take 6 (->> @historical-atom
                        (sort-by first)
-                       reverse
                        (remove (fn [[k {:keys [date] :as v}]]
                                  (or (nil? k)
                                      (str/starts-with? date "finished-")))))))
@@ -245,11 +244,11 @@
 
   ;; 1. write to edn
   #_(spit "tesla-historical-20170901-20170915.edn" @historical-atom)
-  (spit "tesla-historical-20170819-20170829.edn" (pr-str historical-final))
+  (spit "tesla-historical-20170601-20170928.edn" (pr-str historical-final))
 
   ;; 2. write to json
   (require '[clojure.data.json :as json])
-  (spit "tesla-historical-20170819-20170829.json" (json/write-str historical-final))
+  (spit "tesla-historical-20170601-20170928.json" (json/write-str historical-final))
 
 
   (pprint high-opt-imp-volat)
@@ -343,6 +342,7 @@
 
 
 (defn market-start [])
+
 (defn market-stop [])
 
 (defn open-request-ids [])
