@@ -1,0 +1,15 @@
+[
+  {
+    "name": "datomic-console",
+    "image": "186598327969.dkr.ecr.us-east-1.amazonaws.com/edgarly:3",
+    "cpu": 10,
+    "memory": 512,
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 8080
+      }
+    ]
+  }
+]

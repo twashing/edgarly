@@ -1,0 +1,22 @@
+
+terraform import aws_key_pair.deployer aws-timothyjwashington-keypair
+
+terraform apply
+
+# ssh into one of the manager nodes
+# scp docker-compose-stack.yml to one of the manager nodes 
+
+docker network create --driver=overlay --attachable zkkafka
+docker stack deploy -c docker-compose-stack.yml zk
+
+
+docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper "zk1:2181,zk2:2181,zk3:2181"
+
+docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 kafka-topics --describe --topic bar --zookeeper "zk1:2181,zk2:2181,zk3:2181"
+
+docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 bash -c "seq 42 | kafka-console-producer --broker-list kafka1:9092  --topic bar && echo 'Produced 42 messages.'"
+
+docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 kafka-console-consumer --bootstrap-server kafka1:9092 --topic bar --new-consumer --from-beginning --max-messages 42
+
+docker service create --name nginx -p 80:80 nginx
+
