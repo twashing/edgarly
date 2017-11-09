@@ -1,4 +1,4 @@
-package com.interrupt.ibgateway;
+package com.interrupt.edgarly;
 
 import java.util.Set;
 

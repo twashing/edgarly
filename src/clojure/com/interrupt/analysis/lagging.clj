@@ -131,8 +131,7 @@
 (comment
 
   (require '[clojure.tools.reader.edn :as edn]
-           '[clojure.java.io :as io]
-           '[spyscope.core])
+           '[clojure.java.io :as io])
 
   #_(def tick-list (edn/read-string (slurp (io/resource "tesla-historical-20170819-20170829.edn"))))
   (def tick-list (edn/read-string (slurp (io/resource "tesla-historical-20170601-20170928.edn"))))
@@ -365,4 +364,3 @@
   (require '[clojure.data.json :as json])
   (spit "tesla-historical-20170601-20170928-with-signals.edn" (pr-str grouped-list-with-analytics-and-signals))
   (spit "tesla-historical-20170601-20170928-with-signals.json" (json/write-str grouped-list-with-analytics-and-signals)))
-

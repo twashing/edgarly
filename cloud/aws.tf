@@ -66,7 +66,6 @@ resource "aws_security_group" "edgarly-security-group" {
   }
 }
 
-
 resource "aws_internet_gateway" "edgarly-internet-gateway" {
   vpc_id = "${aws_vpc.edgarly-vpc.id}"
 
@@ -415,21 +414,21 @@ STACK
 // CF Stack - Dcoker Swarm
 resource "aws_key_pair" "edgarly-keypair" {
   key_name = "edgarly-keypair"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDeCxXG120vFld6o7Y4IsZUEUe2m8mJPEeRRfzVpqbCrE72Y3zECv43dKGqM3Yquk0LljoUzpDahBpgmsEg4LxndjrixLG2GtQczwuqUsw/VaovUxHQquCkipSsDDegnIGuuY03bBLtjWIaw5kJEEAoPJCwUfDrMOB7PK8/YjMMDqF70zAPtkxS9i9q+RAoM53M42amqbsA4BJTM/bwty9BiMX8GOeANQykjlNVE6dWozGnTWsz9RktxI2TN+CQzoSi8Hrv1I0kFSOIUt02oKQ4CbbAsUYyK96b0npYrQY17H6hsFQcPTKv9+VTFhxTjVaIbMdn4Vv/ylUnhTJ8jma9"
+  public_key = "${file("edgarly.pub")}"
 }
 
 resource "aws_cloudformation_stack" "edgarly-dockerswarm" {
 
   name = "edgarly-dockerswarm"
-  disable_rollback = true
-  depends_on = ["aws_ecr_repository.edgarly-registry" , "aws_vpc.edgarly-vpc", "aws_subnet.edgarly-subnet1", "aws_subnet.edgarly-subnet2", "aws_subnet.edgarly-subnet3"]
+  /* disable_rollback = true */
+  depends_on = ["aws_ecr_repository.edgarly-registry" , "aws_vpc.edgarly-vpc", "aws_subnet.edgarly-subnet1", "aws_subnet.edgarly-subnet2", "aws_subnet.edgarly-subnet3", "aws_key_pair.edgarly-keypair"]
 
   parameters = {
 
     Vpc = "${aws_vpc.edgarly-vpc.id}",
     VpcCidr = "172.31.0.0/16",
-    /* KeyName = "${aws_key_pair.edgarly-keypair.key_name}", */
-    KeyName = "aws-timothyjwashington-keypair"
+    KeyName = "${aws_key_pair.edgarly-keypair.key_name}",
+    /* KeyName = "aws-timothyjwashington-keypair" */
     PubSubnetAz1 = "${aws_subnet.edgarly-subnet1.id}",
     PubSubnetAz2 = "${aws_subnet.edgarly-subnet2.id}",
     PubSubnetAz3 = "${aws_subnet.edgarly-subnet3.id}",
@@ -443,4 +442,3 @@ resource "aws_cloudformation_stack" "edgarly-dockerswarm" {
   capabilities = ["CAPABILITY_IAM"]
   template_url = "https://editions-us-east-1.s3.amazonaws.com/aws/stable/Docker-no-vpc.tmpl"
 }
-

@@ -1,7 +1,10 @@
 
 terraform import aws_key_pair.deployer aws-timothyjwashington-keypair
 
-terraform apply
+terraform plan -var aws_access_key_id=${AWS_ACCESS_KEY_ID} -var aws_secret_key=${AWS_SECRET_ACCESS_KEY}
+
+terraform apply -var aws_access_key_id=${AWS_ACCESS_KEY_ID} -var aws_secret_key=${AWS_SECRET_ACCESS_KEY}
+
 
 # ssh into one of the manager nodes
 # scp docker-compose-stack.yml to one of the manager nodes 
@@ -20,3 +23,6 @@ docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 kafka-console-consumer
 
 docker service create --name nginx -p 80:80 nginx
 
+==
+
+ssh -i edgarly docker@34.228.13.96

@@ -1,6 +1,6 @@
-(defproject com.interrupt/ibgateway "0.1.0-SNAPSHOT"
+(defproject com.interrupt/edgarly "0.1.0-SNAPSHOT"
   :description "Platform code for the edgar trading system"
-  :url "https://github.com/twashing/ibgateway"
+  :url "https://github.com/twashing/edgarly"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
@@ -10,6 +10,7 @@
                  ["myMavenRepo.write" "https://mymavenrepo.com/repo/xc9d5m3WdTIFAqIiiYkn/"]]
 
   :dependencies [[org.clojure/clojure "1.8.0"]
+                 #_[org.clojure/clojure "1.9.0-beta4"]
 
                  ;; explicit versions of deps that would cause transitive dep conflicts
                  [org.clojure/tools.reader "1.0.0-beta1"]
@@ -52,7 +53,6 @@
                                   [org.clojure/tools.namespace "0.2.11"]
                                   [suspendable "0.1.1"]
                                   [ring-mock "0.1.5"]
-                                  [spyscope "0.1.5"]
                                   #_[embedded-kafka "0.3.3"]
 
                                   [org.clojure/test.check "0.9.0"]
@@ -62,6 +62,4 @@
                    :resource-paths ["resources"]}}
 
   :repl-options {:init-ns user}
-  :injections [(require 'spyscope.core)]
-
-  :main com.interrupt.ibgateway.core)
+  :main com.interrupt.edgarly.core)

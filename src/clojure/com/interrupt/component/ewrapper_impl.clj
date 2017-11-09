@@ -1,11 +1,9 @@
 (ns com.interrupt.component.ewrapper-impl
   (:require [clojure.core.async :refer [chan >! <! merge go go-loop pub sub unsub-all sliding-buffer]]
-            [clojure.core.match :refer [match]])
+            #_[clojure.core.match :refer [match]])
   (:import [java.util Calendar]
            [java.text SimpleDateFormat]
-           [com.interrupt.ibgateway.contracts ContractSamples]
-           [com.interrupt.ibgateway.scanner ScannerSubscriptionSamples]
-           [com.interrupt.ibgateway EWrapperImpl]
+           [com.interrupt.edgarly EWrapperImpl]
            [com.ib.client
             EWrapper EClient EClientSocket EReader EReaderSignal
             Contract ContractDetails ScannerSubscription]
@@ -140,7 +138,7 @@
          client (.getClient ewrapperImpl)
          signal (.getSignal ewrapperImpl)
 
-         result (.eConnect client "ibgateway_tws_1" 4002 1)
+         result (.eConnect client "edgarly_tws_1" 4002 1)
 
          ereader (EReader. client signal)]
 

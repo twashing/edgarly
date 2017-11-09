@@ -5,7 +5,7 @@ services:
         deploy:
             replicas: 1
             placement:
-                constraints: [engine.labels.availability_zone == us-west-2a]
+                constraints: [engine.labels.availability_zone == us-east-1a]
         environment:
             ZOOKEEPER_SERVER_ID: 1
             ZOOKEEPER_CLIENT_PORT: 2181
@@ -19,7 +19,7 @@ services:
         deploy:
             replicas: 1
             placement:
-                constraints: [engine.labels.availability_zone == us-west-2b]
+                constraints: [engine.labels.availability_zone == us-east-1b]
         environment:
             ZOOKEEPER_SERVER_ID: 2
             ZOOKEEPER_CLIENT_PORT: 2181
@@ -33,7 +33,7 @@ services:
         deploy:
             replicas: 1
             placement:
-                constraints: [engine.labels.availability_zone == us-west-2c]
+                constraints: [engine.labels.availability_zone == us-east-1c]
         environment:
             ZOOKEEPER_SERVER_ID: 3
             ZOOKEEPER_CLIENT_PORT: 2181

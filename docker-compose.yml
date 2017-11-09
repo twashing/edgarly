@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   zookeeper:
     image: confluentinc/cp-zookeeper:3.1.1
     environment:
@@ -28,7 +29,7 @@ services:
       TWSUSERID: fdemo
       TWSPASSWORD: demouser
       VNC_PASSWORD: some_pass123
-    image: twashing/ibgateway-tws:latest
+    image: twashing/edgarly-tws:latest
     ports:
       - 4002:4002  # API
       - 5900:5900  # VNC
@@ -40,7 +41,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.app
-    image: twashing/ibgateway-app:latest
+    image: twashing/edgarly-app:latest
     depends_on:
       - tws
       - kafka
@@ -50,7 +51,7 @@ services:
       - 5554:5554
     volumes:
       - .:${PWD}
-    entrypoint: lein with-profile +app run -m com.interrupt.ibgateway.core/-main
+    entrypoint: lein with-profile +app run -m com.interrupt.edgarly.core/-main
 
   kafka-tools:
     image: confluentinc/cp-kafka:3.1.1
@@ -64,4 +65,4 @@ services:
     working_dir: /usr/src/app
     entrypoint: /bin/bash
 
-    
+  

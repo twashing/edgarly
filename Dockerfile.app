@@ -1,5 +1,5 @@
-FROM twashing/ibgateway-app-base:latest
+FROM twashing/edgarly-app-base:latest
 MAINTAINER Timothy Washington
 
 
-ENTRYPOINT [ "lein" , "with-profile" , "+app" , "run" , "-m" , "com.interrupt.ibgateway.core/-main" ]
+ENTRYPOINT [ "lein" , "with-profile" , "+app" , "run" , "-m" , "com.interrupt.edgarly.core/-main" ]
