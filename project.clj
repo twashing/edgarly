@@ -55,6 +55,7 @@
                                   [ring-mock "0.1.5"]
                                   #_[embedded-kafka "0.3.3"]
 
+                                  [spyscope "0.1.5"] 
                                   [org.clojure/test.check "0.9.0"]
                                   [clojure-future-spec "1.9.0-alpha17"]
                                   [plumula/mimolette "0.2.1"]

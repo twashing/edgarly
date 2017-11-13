@@ -62,7 +62,6 @@ services:
       - BOOTSTRAP_SERVERS=kafka:9092
       - ZOOKEEPER_CONNECT=zookeeper:2181
       - SCHEMA_REGISTRY_URL=http://schema-registry:8081
+    tty: true
     working_dir: /usr/src/app
     entrypoint: /bin/bash
-
-  

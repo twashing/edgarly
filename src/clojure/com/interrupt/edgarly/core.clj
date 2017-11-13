@@ -17,7 +17,8 @@
              [com.rpl.specter :refer [transform select ALL]]
              [clojure.set :as cs]
              [clojure.math.combinatorics :as cmb]
-             [clojure.pprint :refer [pprint]])
+             [clojure.pprint :refer [pprint]]
+             [spyscope.core])
   (:import [java.util.concurrent TimeUnit]
            [java.util Calendar]
            [java.text SimpleDateFormat]
@@ -31,7 +32,7 @@
   (component/system-map
    :nrepl (new-repl-server 5554 "0.0.0.0")
    :ewrapper (new-ewrapper)
-   #_:onyx #_(new-onyx)))
+   :onyx (new-onyx)))
 
 (set-init! #'system-map)
 (defn start-system [] (start))
@@ -121,7 +122,7 @@
 
 ;; TODO - replace with kafka + stream processing asap
 (defn top-level-scan-item [scan-name]
-  (let [scan-sym #spy/d (-> scan-name (str/lower-case) (str/replace "_" "-") symbol)]
+  (let [scan-sym #_spy/d (-> scan-name (str/lower-case) (str/replace "_" "-") symbol)]
     (if-let [scan-resolved (resolve scan-sym)]
       scan-resolved
       (intern *ns* scan-sym (atom {})))))
@@ -276,7 +277,7 @@
   (ei/scanner-unsubscribe 11 client)
 
   (def ss (let [scan-names (->> config :scanners (map :scan-name))
-                scan-subsets #spy/d (map (fn [sname]
+                scan-subsets #_spy/d (map (fn [sname]
                                            (->> @scanner-subscriptions
                                                 (filter (fn [e] (= (::scan-name e) sname)))
                                                 first ::scan-value vals (map :symbol)
