@@ -14,12 +14,12 @@
 (defn serialize-kafka-message [segment]
   (.serialize serializer nil segment))
 
-(defn deserialize-kafka-key [k] k)
-(defn serialize-kafka-key [k] k)
+#_(defn deserialize-kafka-key [k] k)
+#_(defn serialize-kafka-key [k] k)
 
 
-#_(defn deserialize-kafka-key [topic k]
+(defn deserialize-kafka-key [topic k]
   (.deserialize string-deserializer topic k))
 
-#_(defn serialize-kafka-key [topic k]
+(defn serialize-kafka-key [topic k]
   (.serialize string-serializer topic k))

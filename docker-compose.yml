@@ -47,6 +47,7 @@ services:
       - kafka
       - zookeeper
     working_dir: ${PWD}
+    shm_size: 1G
     ports:
       - 5554:5554
     volumes:

@@ -14,15 +14,29 @@ docker stack deploy -c docker-compose-stack.yml zk
 
 
 docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 kafka-topics --create --topic bar --partitions 3 --replication-factor 3 --if-not-exists --zookeeper "zk1:2181,zk2:2181,zk3:2181"
-
 docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 kafka-topics --describe --topic bar --zookeeper "zk1:2181,zk2:2181,zk3:2181"
-
 docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 bash -c "seq 42 | kafka-console-producer --broker-list kafka1:9092  --topic bar && echo 'Produced 42 messages.'"
-
 docker run --net=zkkafka --rm confluentinc/cp-kafka:3.2.2 kafka-console-consumer --bootstrap-server kafka1:9092 --topic bar --new-consumer --from-beginning --max-messages 42
-
 docker service create --name nginx -p 80:80 nginx
 
 ==
+
+# http://www.shayne.me/blog/2015/2015-06-25-everything-about-kafka-part-2/
+# http://bigdatums.net/2017/05/21/send-key-value-messages-kafka-console-producer/
+
+kafka-console-producer \
+  --broker-list kafka:9092 \
+  --topic scanner-command \
+  --property "parse.key=true" \
+  --property "key.separator=,"
+
+
+4b6d8c94-4674-4466-9ee2-872bf1678e78,{:foo :bar}
+6af3345a-5634-4b41-9762-ce8ad6f6eaa8,{:qwerty :asdf}
+
+kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command --new-consumer --from-beginning 
+kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command-result --new-consumer --from-beginning
+
 
 ssh -i edgarly docker@34.228.13.96

@@ -29,9 +29,14 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/math.combinatorics "0.1.4"]
 
-                 [org.apache.kafka/kafka_2.11 "0.10.1.1" :exclusions [org.slf4j/slf4j-log4j12]]
-                 [org.onyxplatform/onyx "0.10.0-beta12"]
-                 [org.onyxplatform/onyx-kafka "0.10.0.0-beta12"]
+                 #_[org.apache.kafka/kafka_2.11 "0.10.1.1" :exclusions [org.slf4j/slf4j-log4j12]]
+                 #_[org.apache.kafka/kafka_2.11 "0.9.0.1" :exclusions [org.scala-lang/scala-library
+                                                                       org.slf4j/slf4j-log4j12]]
+                 [org.apache.kafka/kafka_2.11 "0.11.0.0" :exclusions [org.scala-lang/scala-library
+                                                                      org.slf4j/slf4j-log4j12]]
+
+                 [org.onyxplatform/onyx "0.12.0-beta3"]
+                 [org.onyxplatform/onyx-kafka "0.12.0.0-beta3"]
                  [ymilky/franzy "0.0.1"]
                  [ymilky/franzy-transit "0.0.1"]
                  [ymilky/franzy-admin "0.0.1" :exclusions [org.slf4j/slf4j-api]]

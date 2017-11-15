@@ -2,10 +2,21 @@
   (:require [clojure.java.io :as io]
             [com.stuartsierra.component :as component]
             [onyx.api]
-            [franzy.clients.producer.protocols :refer :all]
-            [franzy.clients.consumer.protocols :refer :all]
+
+            [onyx.plugin.kafka :refer [read-messages write-messages]]
+
+            #_[franzy.clients.producer.protocols :refer :all]
+            #_[franzy.clients.consumer.protocols :refer :all]
             [franzy.serialization.serializers :as serializers]
             [franzy.serialization.deserializers :as deserializers]
+
+            #_[franzy.clients.producer.client :as producer]
+            #_[franzy.clients.consumer.client :as consumer]
+            #_[franzy.admin.zookeeper.client :as client]
+            #_[franzy.admin.topics :as topics]
+            #_[franzy.clients.producer.defaults :as pd]
+            #_[franzy.clients.consumer.defaults :as cd]
+
             [com.interrupt.streaming.platform :as pl]
             [com.interrupt.streaming.platform.scanner-command :as psc]
             [com.interrupt.streaming.platform.scanner :as ps]
@@ -19,18 +30,21 @@
 (defn submit-jobs! [config-file-string]
 
   (let [{:keys [zookeeper-url] :as config} (read-config (io/resource config-file-string))
-        env-config #_spy/d (assoc (:env-config config)
+
+        env-config (assoc (:env-config config)
                           :zookeeper/address zookeeper-url)
-        peer-config #_spy/d (assoc (:peer-config config)
+
+        peer-config (assoc (:peer-config config)
                            :zookeeper/address zookeeper-url)
-        env #_spy/d (onyx.api/start-env env-config)
-        peer-group #_spy/d (onyx.api/start-peer-group peer-config)
 
-        peer-count 6 ;; #_#spy/d (n-peers the-catalog the-workflow)
-        v-peers #_spy/d (onyx.api/start-peers peer-count peer-group)]
+        env (onyx.api/start-env env-config)
+        peer-group (onyx.api/start-peer-group peer-config)
 
-    (for [[the-workflow the-catalog] [[psc/workflow (psc/catalog zookeeper-url "scanner-command" "scanner")]
-                                      [ps/workflow (ps/catalog zookeeper-url "scanner" "filtered-stocks")]]]
+        peer-count 6
+        v-peers (onyx.api/start-peers peer-count peer-group)]
+
+    (for [[the-workflow the-catalog] [[psc/workflow (psc/catalog zookeeper-url "scanner-command")]
+                                      #_[ps/workflow (ps/catalog zookeeper-url :scanner :filtered-stocks)]]]
 
       (let [job {:workflow the-workflow
                  :catalog the-catalog
@@ -40,9 +54,11 @@
 
 (comment
 
-  (pl/one-setup-topics)
-  (pl/two-write-to-topic "scanner-command" (str (UUID/randomUUID)) {:foo :bar})
-  (submit-jobs! "config.edn"))
+  (def topics (pl/one-setup-topics))
+  (def result (pl/two-write-to-topic "scanner-command" (str (UUID/randomUUID)) {:foo :bar}))
+
+  (let [submitted-jobs (submit-jobs! "config.edn")]
+    (println ";; Onyx submitted jobs: " submitted-jobs)))
 
 
 (defrecord Onyx []
@@ -51,17 +67,18 @@
   (start [component]
 
     (println ";; Starting Onyx")
-    ;; (pl/one-setup-topics)
-    ;; (pl/two-write-to-topic "scanner-command" (str (UUID/randomUUID)) {:foo :bar})
+    #_(pl/one-setup-topics)
+    #_(pl/two-write-to-topic "scanner-command" (str (UUID/randomUUID)) {:foo :bar})
 
     (let [submitted-jobs (submit-jobs! "config.edn")]
+      (println ";; Onyx submitted jobs: " submitted-jobs)
       (assoc component :onyx-jobs submitted-jobs)))
 
   (stop [component]
 
     (println ";; Stopping Onyx")
 
-    (let [submitted-jobs #_spy/d (:onyx-jobs component)
+    (let [submitted-jobs (:onyx-jobs component)
           {:keys [zookeeper-url] :as config} (read-config (io/resource "config.edn"))
           peer-config (assoc (:peer-config config)
                              :zookeeper/address zookeeper-url)]

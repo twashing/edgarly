@@ -14,12 +14,7 @@
 (def output-topics
   (->> workflow rest (map last)))
 
-(defn catalog [zookeeper-url topic-read topic-write]
-  (base/catalog-basic zookeeper-url topic-read topic-write
-                      {:input-name :scanner-command
-                       :output-name :scanner-command-result
-                       :function-name :ibgateway
-                       :function-id :com.interrupt.streaming.platform.base/local-identity})
+(defn catalog [zookeeper-url topic-read]
 
   [{:onyx/name :scanner-command
     :onyx/type :input
@@ -31,8 +26,8 @@
     :onyx/batch-size 10
     :kafka/zookeeper zookeeper-url
     :kafka/topic topic-read
-    :kafka/deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-message
     :kafka/key-deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-key
+    :kafka/deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-message
     :kafka/offset-reset :earliest
     :onyx/doc "Read from the 'scanner-command' Kafka topic"}
 
@@ -51,9 +46,9 @@
     :onyx/max-peers 1
     :onyx/batch-size 10
     :kafka/zookeeper zookeeper-url
-    :kafka/topic topic-write
-    :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
+    :kafka/topic "scanner-command-result"
     :kafka/key-serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-key
+    :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
     :kafka/request-size 307200
     :onyx/doc "Writes messages to a Kafka topic"}
 
@@ -65,8 +60,8 @@
     :onyx/max-peers 1
     :onyx/batch-size 10
     :kafka/zookeeper zookeeper-url
-    :kafka/topic topic-write
-    :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
+    :kafka/topic "scanner"
     :kafka/key-serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-key
+    :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
     :kafka/request-size 307200
     :onyx/doc "Writes messages to a Kafka topic"}])
