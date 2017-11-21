@@ -1,30 +1,46 @@
-version: '3'
+version: '3.3'
 services:
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:3.1.1
+    image: confluentinc/cp-zookeeper:3.3.1
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
-    expose:
-      - 2181
+    ports:
+      - 2181:2181
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
 
   kafka:
-    expose:
-      - 9092
-      - 8082
+    image: confluentinc/cp-kafka:3.3.1
+    ports:
+      - 9092:9092
+      - 8082:8082
     environment:
       - KAFKA_BROKER_ID=0
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
-    image: confluentinc/cp-kafka:3.1.1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    volumes:
+      - name: dsm
+        target: /dev/shm
+        emptyDir:
+          medium: Memory
     depends_on:
       - zookeeper
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
 
   tws:
-    build:
-      context: .
-      dockerfile: Dockerfile.tws
     environment:
       TWSUSERID: fdemo
       TWSPASSWORD: demouser
@@ -38,9 +54,6 @@ services:
     entrypoint: /usr/local/bin/install-base.sh
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.app
     image: twashing/edgarly-app:latest
     depends_on:
       - tws
@@ -55,7 +68,7 @@ services:
     entrypoint: lein with-profile +app run -m com.interrupt.edgarly.core/-main
 
   kafka-tools:
-    image: confluentinc/cp-kafka:3.1.1
+    image: confluentinc/cp-kafka:3.3.1
     depends_on:
       - zookeeper
       - kafka
@@ -66,3 +79,17 @@ services:
     tty: true
     working_dir: /usr/src/app
     entrypoint: /bin/bash
+
+# volumes:
+#   dshm:
+# 
+# spec:
+#   volumes:
+#     - name: dshm
+#       emptyDir:
+#         medium: Memory
+#   containers:
+#     - image: gcr.io/project/image
+#       volumeMounts:
+#         - mountPath: /dev/shm
+#           name: dshm

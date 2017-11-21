@@ -21,22 +21,120 @@ docker service create --name nginx -p 80:80 nginx
 
 ==
 
+# https://docs.docker.com/engine/swarm/stack-deploy
+
+
+# for existing, running, multi-node swarm 
+docker stack ...
+docker service ...
+
+
+# on a local machine
+docker swarm init
+docker stack deploy --compose-file docker-compose.yml edgarly
+
+# Swarm initialized: current node (so3lf0e81fqzz8agrj2m51d7c) is now a manager.
+# 
+# To add a worker to this swarm, run the following command:
+# 
+#     docker swarm join --token SWMTKN-1-69j2qq6m4yiccyt0ujhij1fdmpatrclpvhur0xp7j0kk9y7zjl-buxui4bh4p83nlageepjcs53h 192.168.65.2:2377
+# 
+# To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+docker stack services edgarly
+docker stack ps edgarly
+
+docker stack rm edgarly
+
+# on a local machine
+docker swarm leave --force
+
+==
+
+# TODO
+
+[ok] Try with Simple Kafka Onyx Commander
+Warning: space is running low in /dev/shm (shm) threshold=167,772,160 usable=58,716,160
+
+Error. Id: -1, Code: 502, Msg: Couldn't connect to TWS. Confirm that "Enable ActiveX and Socket Clients" is enabled and
+
+==
+
+docker-compose exec kafka-tools /bin/bash
+
 # http://www.shayne.me/blog/2015/2015-06-25-everything-about-kafka-part-2/
 # http://bigdatums.net/2017/05/21/send-key-value-messages-kafka-console-producer/
 
+
+# kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic test
+kafka-topics --create \
+             --zookeeper zookeeper:2181 \
+             --topic scanner-command-result \
+             --replication-factor 1 \
+             --partitions 1 \
+             --config cleanup.policy=compact
+
+kafka-topics --list --zookeeper zookeeper:2181
+kafka-topics --describe --zookeeper zookeeper:2181
+kafka-topics --describe --zookeeper zookeeper:2181 --topic scanner-command
+
 kafka-console-producer \
   --broker-list kafka:9092 \
-  --topic scanner-command \
+  --topic scanner-command-result \
   --property "parse.key=true" \
   --property "key.separator=,"
 
-
 4b6d8c94-4674-4466-9ee2-872bf1678e78,{:foo :bar}
 6af3345a-5634-4b41-9762-ce8ad6f6eaa8,{:qwerty :asdf}
+310fcfe4-3cf6-4b8e-9c26-5557634dc6b3,{:thing :amabob}
 
 kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command --new-consumer --from-beginning 
-kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
 kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command-result --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
 
 
 ssh -i edgarly docker@34.228.13.96
+
+
+==
+
+kafka-console-producer \
+  --broker-list kafka:9092 \
+  --topic scanner \
+  --property "parse.key=true" \
+  --property "key.separator=,"
+
+==
+
+
+docker-compose exec kafka-tools /bin/bash
+
+kafka-topics --create \
+             --zookeeper zookeeper:2181 \
+             --topic read-messages \
+             --replication-factor 1 \
+             --partitions 1 \
+             --config cleanup.policy=compact
+
+kafka-topics --create \
+             --zookeeper zookeeper:2181 \
+             --topic write-messages \
+             --replication-factor 1 \
+             --partitions 1 \
+             --config cleanup.policy=compact
+
+kafka-topics --list --zookeeper zookeeper:2181
+
+kafka-console-producer \
+  --broker-list kafka:9092 \
+  --topic read-messages \
+  --property "parse.key=true" \
+  --property "key.separator=,"  
+
+4b6d8c94-4674-4466-9ee2-872bf1678e78,{:foo :bar}
+6af3345a-5634-4b41-9762-ce8ad6f6eaa8,{:qwerty :asdf}
+310fcfe4-3cf6-4b8e-9c26-5557634dc6b3,{:thing :amabob}
+
+kafka-console-consumer --bootstrap-server kafka:9092 --topic read-messages --new-consumer --from-beginning
+
+

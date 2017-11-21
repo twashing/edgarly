@@ -4,6 +4,7 @@
             [onyx.api]
 
             [onyx.plugin.kafka :refer [read-messages write-messages]]
+            [onyx.kafka.helpers :as h]
 
             #_[franzy.clients.producer.protocols :refer :all]
             #_[franzy.clients.consumer.protocols :refer :all]
@@ -67,6 +68,14 @@
   (start [component]
 
     (println ";; Starting Onyx")
+
+    (doseq [topic [pl/topic-scanner-command
+                   pl/topic-scanner
+                   pl/topic-filtered-stocks
+                   pl/topic-stock-command]]
+
+      (h/create-topic! "zookeeper:2181" topic 1 1))
+
     #_(pl/one-setup-topics)
     #_(pl/two-write-to-topic "scanner-command" (str (UUID/randomUUID)) {:foo :bar})
 

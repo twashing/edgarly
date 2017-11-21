@@ -81,4 +81,18 @@ This could be due to a typo in :dependencies or network issues.
 If you are behind a proxy, try setting the 'http_proxy' environment variable.
 Error encountered performing task 'run' with profile(s): 'base,system,user,provided,dev,app'
 ```
-b
+
+
+### For Onyx-kafka, Troubleshooting simple job not writing to a topic
+- https://github.com/onyx-platform/onyx-kafka/issues/47
+
+
+### For scaling n kafka nodes, howto set docker swarm runtime volume size (/dev/shm)?
+- https://stackoverflow.com/questions/47401805/howto-set-docker-swarm-runtime-volume-size-dev-shm
+- https://stackoverflow.com/questions/46085748/define-size-for-dev-shm-on-container-engine
+
+
+### Once docker swarm successfully runs many kafka nodes
+- datomic in existing VPC
+- swarm visualizer node
+- datomic console
