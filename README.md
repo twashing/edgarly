@@ -20,7 +20,7 @@ docker build --no-cache -f Dockerfile.tws -t twashing/edgarly-tws:latest -t twas
 docker build --no-cache -f Dockerfile.app.base -t twashing/edgarly-app-base:latest -t twashing/edgarly-app-base:`git rev-parse HEAD` .
 docker build --no-cache -f Dockerfile.app -t twashing/edgarly-app:latest -t twashing/edgarly-app:`git rev-parse HEAD` .
 
-lein with-profile  +app  run -m  com.interrupt.edgarly.core/-main
+lein with-profile +app run -m com.interrupt.edgarly.core/-main
 ```
 
 C) Bringing up docker-compose 
@@ -30,6 +30,11 @@ docker-compose up
 
 # Force a rebuild of containers
 docker-compose up --force-recreate --build
+```
+
+D) Running the app solo
+```
+lein with-profile +app run -m com.interrupt.edgarly.core/-main
 ```
 
 ## Lifecycle functions
@@ -90,6 +95,17 @@ Error encountered performing task 'run' with profile(s): 'base,system,user,provi
 ### For scaling n kafka nodes, howto set docker swarm runtime volume size (/dev/shm)?
 - https://stackoverflow.com/questions/47401805/howto-set-docker-swarm-runtime-volume-size-dev-shm
 - https://stackoverflow.com/questions/46085748/define-size-for-dev-shm-on-container-engine
+
+
+#### Try these options
+- https://github.com/wurstmeister/kafka-docker
+- https://hub.docker.com/r/wurstmeister/kafka/
+- https://stackoverflow.com/questions/37428269/build-a-multi-node-kafka-cluster-on-docker-swarm
+- https://jeqo.github.io/post/2017-01-15-scale-kafka-containers/
+- http://codeblog.dotsandbrackets.com/highly-available-kafka-cluster-docker/
+- https://blogs.perficient.com/delivery/blog/2017/05/25/how-to-install-kafka-cluster-in-the-docker-containers/
+- https://sematext.com/blog/monitoring-kafka-on-docker-cloud/
+- https://www.linkedin.com/pulse/zookeeper-kafka-aws-docker-swarms-oh-my-eric-kolotyluk/
 
 
 ### Once docker swarm successfully runs many kafka nodes

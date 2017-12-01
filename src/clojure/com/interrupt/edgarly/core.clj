@@ -1,7 +1,10 @@
 (ns com.interrupt.edgarly.core
   (:require  [com.stuartsierra.component :as component]
              [system.repl :refer [set-init! init start stop reset refresh system]]
+
              [system.components.repl-server :refer [new-repl-server]]
+             [com.interrupt.component.repl-process :refer [repl-process]]
+
              [com.interrupt.component.ewrapper :refer [new-ewrapper]]
              [com.interrupt.component.onyx :refer [new-onyx]]
              [com.interrupt.component.ewrapper-impl :as ei]
@@ -31,7 +34,7 @@
 (defn system-map []
   (component/system-map
    :nrepl (new-repl-server 5554 "0.0.0.0")
-   :ewrapper (new-ewrapper)
+   ;; :ewrapper (new-ewrapper)
    :onyx (new-onyx)))
 
 (set-init! #'system-map)
@@ -89,7 +92,7 @@
                                           (into #{} scannerids)))]
 
     [scannerids availableids]))
-
+;; 
 (defn next-reqid [scanner-subscriptions]
   (match [scanner-subscriptions]
          [nil] 1

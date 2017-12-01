@@ -180,7 +180,7 @@ resource "aws_ecr_repository_policy" "edgarly-registry-policy" {
 
 
 // CF Stack - Datomic
-/* resource "aws_security_group" "datomic" {
+resource "aws_security_group" "datomic" {
   name = "datomic"
   description = "datomic"
 
@@ -385,6 +385,49 @@ resource "aws_cloudformation_stack" "edgarly-datomic" {
 STACK
 }
 
+data "aws_autoscaling_groups" "datomic" {
+  filter {
+    name = "key"
+    values = ["AWS::StackName"]
+  }
+
+  filter {
+    name = "value"
+    values = ["edgarly-datomic-stack"]
+  }
+}
+
+resource "aws_lb_target_group" "datomic" {
+  name     = "datomic-lb-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = "${aws_vpc.edgarly-vpc.id}"
+}
+
+resource "aws_lb" "datomic" {
+  name            = "datomic-lb"
+  internal        = false
+  security_groups = ["${aws_security_group.datomic.id}"]
+  subnets         = ["${aws_subnet.edgarly-subnet1.id}"]
+}
+
+resource "aws_autoscaling_attachment" "asg_attachment" {
+  autoscaling_group_name = "${data.aws_autoscaling_groups.datomic.names}"
+  alb_target_group_arn   = "${aws_alb_target_group.datomic.arn}"
+}
+
+
+resource "aws_lb_listener" "datomic" {
+  load_balancer_arn = "${aws_lb.datomic.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.datomic.arn}"
+    type             = "forward"
+  }
+}
+
 /* resource "aws_cloudformation_stack" "edgarly-dockerswarm" {
 
   name = "edgarly-dockerswarm"
@@ -411,7 +454,7 @@ STACK
 */
 
 
-// CF Stack - Dcoker Swarm
+// CF Stack - Docker Swarm
 resource "aws_key_pair" "edgarly-keypair" {
   key_name = "edgarly-keypair"
   public_key = "${file("edgarly.pub")}"

@@ -31,29 +31,45 @@
 (defn submit-jobs! [config-file-string]
 
   (let [{:keys [zookeeper-url] :as config} (read-config (io/resource config-file-string))
+        ;; _ (println "Sanity 1: " config)
 
         env-config (assoc (:env-config config)
                           :zookeeper/address zookeeper-url)
+        ;; _ (println "Sanity 2: " env-config)
 
         peer-config (assoc (:peer-config config)
                            :zookeeper/address zookeeper-url)
+        ;; _ (println "Sanity 3: " peer-config)
 
         env (onyx.api/start-env env-config)
+        ;; _ (println "Sanity 4: " env)
+
         peer-group (onyx.api/start-peer-group peer-config)
+        ;; _ (println "Sanity 5: " peer-group)
 
         peer-count 6
-        v-peers (onyx.api/start-peers peer-count peer-group)]
+        v-peers (onyx.api/start-peers peer-count peer-group)
+        ;; _ (println "Sanity 6: " v-peers)
+        ]
 
-    (for [[the-workflow the-catalog] [[psc/workflow (psc/catalog zookeeper-url "scanner-command")]
-                                      #_[ps/workflow (ps/catalog zookeeper-url :scanner :filtered-stocks)]]]
+    (println "Sanity 7: " (psc/catalog zookeeper-url "scanner-command" :onyx))
 
-      (let [job {:workflow the-workflow
-                 :catalog the-catalog
-                 :task-scheduler :onyx.task-scheduler/balanced}
-            {:keys [job-id task-ids] :as submitted-job} #_spy/d (onyx.api/submit-job peer-config job)]
-        submitted-job))))
+    (for [[the-workflow the-lifecycles the-catalog] [[psc/workflow
+                                                      (psc/lifecycles :kafka)
+                                                      (psc/catalog zookeeper-url "scanner-command" :kafka)]
 
-(comment
+                                                     #_[ps/workflow (ps/catalog zookeeper-url :scanner :filtered-stocks)]]]
+
+      (do (println "the-catalog: " the-catalog)
+          (let [job {:workflow the-workflow
+                     :catalog the-catalog
+                     :lifecycles the-lifecycles
+                     :task-scheduler :onyx.task-scheduler/balanced}
+                {:keys [job-id task-ids] :as submitted-job} #_spy/d (onyx.api/submit-job peer-config job)]
+
+            submitted-job)))))
+
+#_(comment
 
   (def topics (pl/one-setup-topics))
   (def result (pl/two-write-to-topic "scanner-command" (str (UUID/randomUUID)) {:foo :bar}))
@@ -68,16 +84,16 @@
   (start [component]
 
     (println ";; Starting Onyx")
+    ;; (submit-jobs! "config.edn")
+    ;; (assoc component :onyx-jobs :foo)
 
-    (doseq [topic [pl/topic-scanner-command
+    #_(doseq [topic [pl/topic-scanner-command
                    pl/topic-scanner
                    pl/topic-filtered-stocks
                    pl/topic-stock-command]]
 
       (h/create-topic! "zookeeper:2181" topic 1 1))
 
-    #_(pl/one-setup-topics)
-    #_(pl/two-write-to-topic "scanner-command" (str (UUID/randomUUID)) {:foo :bar})
 
     (let [submitted-jobs (submit-jobs! "config.edn")]
       (println ";; Onyx submitted jobs: " submitted-jobs)
@@ -86,16 +102,17 @@
   (stop [component]
 
     (println ";; Stopping Onyx")
+    #_(dissoc component :onyx-jobs)
 
     (let [submitted-jobs (:onyx-jobs component)
           {:keys [zookeeper-url] :as config} (read-config (io/resource "config.edn"))
           peer-config (assoc (:peer-config config)
                              :zookeeper/address zookeeper-url)]
 
-      (for [{:keys [job-id task-ids] :as submitted-job} submitted-jobs]
+      (doseq [{:keys [job-id task-ids] :as submitted-job} submitted-jobs]
         (onyx.api/kill-job peer-config job-id))
 
-      (dissoc component :onyx))))
+      (dissoc component :onyx-jobs))))
 
 (defn new-onyx []
   (map->Onyx {}))

@@ -21,6 +21,7 @@ docker service create --name nginx -p 80:80 nginx
 
 ==
 
+
 # https://docs.docker.com/engine/swarm/stack-deploy
 
 
@@ -33,6 +34,7 @@ docker service ...
 docker swarm init
 docker stack deploy --compose-file docker-compose.yml edgarly
 
+
 # Swarm initialized: current node (so3lf0e81fqzz8agrj2m51d7c) is now a manager.
 # 
 # To add a worker to this swarm, run the following command:
@@ -43,11 +45,22 @@ docker stack deploy --compose-file docker-compose.yml edgarly
 
 docker stack services edgarly
 docker stack ps edgarly
-
 docker stack rm edgarly
 
+
+# inspect processes in a service
+
+docker service ls
+docker service ps edgarly
+docker service ps edgarly_app
+docker service ps edgarly_kafka
+docker service ps edgarly_zookeeper
+
+
 # on a local machine
+
 docker swarm leave --force
+
 
 ==
 
@@ -67,16 +80,30 @@ docker-compose exec kafka-tools /bin/bash
 
 
 # kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic test
-kafka-topics --create \
+kafka-topics.sh --create \
+             --zookeeper zookeeper:2181 \
+             --topic scanner-command \
+             --replication-factor 1 \
+             --partitions 1 \
+             --config cleanup.policy=compact
+
+kafka-topics.sh --create \
              --zookeeper zookeeper:2181 \
              --topic scanner-command-result \
              --replication-factor 1 \
              --partitions 1 \
              --config cleanup.policy=compact
 
-kafka-topics --list --zookeeper zookeeper:2181
-kafka-topics --describe --zookeeper zookeeper:2181
-kafka-topics --describe --zookeeper zookeeper:2181 --topic scanner-command
+kafka-topics.sh --create \
+             --zookeeper zookeeper:2181 \
+             --topic scanner \
+             --replication-factor 1 \
+             --partitions 1 \
+             --config cleanup.policy=compact
+
+kafka-topics.sh --list --zookeeper zookeeper:2181
+kafka-topics.sh --describe --zookeeper zookeeper:2181
+kafka-topics.sh --describe --zookeeper zookeeper:2181 --topic scanner-command
 
 kafka-console-producer \
   --broker-list kafka:9092 \
@@ -88,9 +115,9 @@ kafka-console-producer \
 6af3345a-5634-4b41-9762-ce8ad6f6eaa8,{:qwerty :asdf}
 310fcfe4-3cf6-4b8e-9c26-5557634dc6b3,{:thing :amabob}
 
-kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command --new-consumer --from-beginning 
-kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command-result --new-consumer --from-beginning
-kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
+kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic scanner-command --new-consumer --from-beginning 
+kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic scanner-command-result --new-consumer --from-beginning
+kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
 
 
 ssh -i edgarly docker@34.228.13.96
