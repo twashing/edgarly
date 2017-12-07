@@ -180,9 +180,11 @@ resource "aws_ecr_repository_policy" "edgarly-registry-policy" {
 
 
 // CF Stack - Datomic
-resource "aws_security_group" "datomic" {
+/* resource "aws_security_group" "datomic" {
   name = "datomic"
   description = "datomic"
+  vpc_id = "${aws_vpc.edgarly-vpc.id}"
+  depends_on = ["aws_vpc.edgarly-vpc"]
 
   ingress {
     from_port = 4334
@@ -217,7 +219,7 @@ resource "aws_cloudformation_stack" "edgarly-datomic" {
 
   name = "edgarly-datomic-stack"
   disable_rollback = true
-  depends_on = ["aws_ecr_repository.edgarly-registry" , "aws_vpc.edgarly-vpc", "aws_subnet.edgarly-subnet1", "aws_subnet.edgarly-subnet2", "aws_subnet.edgarly-subnet3"]
+  depends_on = ["aws_ecr_repository.edgarly-registry" , "aws_vpc.edgarly-vpc", "aws_subnet.edgarly-subnet1", "aws_subnet.edgarly-subnet2", "aws_subnet.edgarly-subnet3", "aws_security_group.datomic"]
 
   parameters = {
     SecurityGroups = "datomic , edgarly-security-group" 
@@ -384,78 +386,10 @@ resource "aws_cloudformation_stack" "edgarly-datomic" {
  "Description":"Datomic Transactor Template"}
 STACK
 }
-
-data "aws_autoscaling_groups" "datomic" {
-  filter {
-    name = "key"
-    values = ["AWS::StackName"]
-  }
-
-  filter {
-    name = "value"
-    values = ["edgarly-datomic-stack"]
-  }
-}
-
-resource "aws_lb_target_group" "datomic" {
-  name     = "datomic-lb-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = "${aws_vpc.edgarly-vpc.id}"
-}
-
-resource "aws_lb" "datomic" {
-  name            = "datomic-lb"
-  internal        = false
-  security_groups = ["${aws_security_group.datomic.id}"]
-  subnets         = ["${aws_subnet.edgarly-subnet1.id}"]
-}
-
-resource "aws_autoscaling_attachment" "asg_attachment" {
-  autoscaling_group_name = "${data.aws_autoscaling_groups.datomic.names}"
-  alb_target_group_arn   = "${aws_alb_target_group.datomic.arn}"
-}
-
-
-resource "aws_lb_listener" "datomic" {
-  load_balancer_arn = "${aws_lb.datomic.arn}"
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    target_group_arn = "${aws_lb_target_group.datomic.arn}"
-    type             = "forward"
-  }
-}
-
-/* resource "aws_cloudformation_stack" "edgarly-dockerswarm" {
-
-  name = "edgarly-dockerswarm"
-  disable_rollback = true
-
-  parameters = {
-
-    Vpc = "vpc-74569311",
-    VpcCidr = "172.31.0.0/16",
-    KeyName = "aws-timothyjwashington-keypair",
-    PubSubnetAz1 = "subnet-0c0e8100",
-    PubSubnetAz2 = "subnet-2beb8a11",
-    PubSubnetAz3 = "subnet-52978826",
-
-    InstanceType = "t2.micro",
-    ManagerInstanceType = "t2.micro",
-    ClusterSize = "5",
-    ManagerSize = "3"
-  }
-
-  capabilities = ["CAPABILITY_IAM"]
-  template_url = "https://editions-us-east-1.s3.amazonaws.com/aws/stable/Docker-no-vpc.tmpl"
-}
 */
 
-
 // CF Stack - Docker Swarm
-resource "aws_key_pair" "edgarly-keypair" {
+/* resource "aws_key_pair" "edgarly-keypair" {
   key_name = "edgarly-keypair"
   public_key = "${file("edgarly.pub")}"
 }
@@ -463,7 +397,7 @@ resource "aws_key_pair" "edgarly-keypair" {
 resource "aws_cloudformation_stack" "edgarly-dockerswarm" {
 
   name = "edgarly-dockerswarm"
-  /* disable_rollback = true */
+  /* disable_rollback = true * /
   depends_on = ["aws_ecr_repository.edgarly-registry" , "aws_vpc.edgarly-vpc", "aws_subnet.edgarly-subnet1", "aws_subnet.edgarly-subnet2", "aws_subnet.edgarly-subnet3", "aws_key_pair.edgarly-keypair"]
 
   parameters = {
@@ -471,7 +405,7 @@ resource "aws_cloudformation_stack" "edgarly-dockerswarm" {
     Vpc = "${aws_vpc.edgarly-vpc.id}",
     VpcCidr = "172.31.0.0/16",
     KeyName = "${aws_key_pair.edgarly-keypair.key_name}",
-    /* KeyName = "aws-timothyjwashington-keypair" */
+    /* KeyName = "aws-timothyjwashington-keypair" * /
     PubSubnetAz1 = "${aws_subnet.edgarly-subnet1.id}",
     PubSubnetAz2 = "${aws_subnet.edgarly-subnet2.id}",
     PubSubnetAz3 = "${aws_subnet.edgarly-subnet3.id}",
@@ -485,3 +419,13 @@ resource "aws_cloudformation_stack" "edgarly-dockerswarm" {
   capabilities = ["CAPABILITY_IAM"]
   template_url = "https://editions-us-east-1.s3.amazonaws.com/aws/stable/Docker-no-vpc.tmpl"
 }
+*/
+
+// Outputs
+output "vpc" {
+  value = "${aws_vpc.edgarly-vpc.id}"
+}
+output "subnets" {
+  value = ["${aws_subnet.edgarly-subnet1.id}", "${aws_subnet.edgarly-subnet2.id}", "${aws_subnet.edgarly-subnet3.id}"]
+}
+
