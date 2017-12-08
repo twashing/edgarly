@@ -1,5 +1,5 @@
 (ns com.interrupt.streaming.platform.scanner-command
-  (:require [clojure.core.async :refer [chan]]
+  (:require [clojure.core.async :refer [chan >!! <!! >! <!]]
             [com.interrupt.streaming.platform.base :as base]
             [com.interrupt.streaming.platform.serialization]))
 
@@ -141,3 +141,9 @@
    (merge output-scanner
           (-> (catalog-configs zookeeper-url topic-read platform-type)
               :output-scanner platform-type))])
+
+(comment
+
+  (>!! in-chan {:foo :bar})
+  (def result (<!! out-chan))
+  )

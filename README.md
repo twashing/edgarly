@@ -17,8 +17,8 @@ B) You have to do an initial build of base docker images.
 docker build --no-cache -f Dockerfile.tws.base -t twashing/edgarly-tws-base:latest -t twashing/edgarly-tws-base:`git rev-parse HEAD` .
 docker build --no-cache -f Dockerfile.tws -t twashing/edgarly-tws:latest -t twashing/edgarly-tws:`git rev-parse HEAD` .
 
-docker build --no-cache -f Dockerfile.app.base -t twashing/edgarly-app-base:latest -t twashing/edgarly-app-base:`git rev-parse HEAD` .
-docker build --no-cache -f Dockerfile.app -t twashing/edgarly-app:latest -t twashing/edgarly-app:`git rev-parse HEAD` .
+docker build --force-rm --no-cache -f Dockerfile.app.base -t twashing/edgarly-app-base:latest -t twashing/edgarly-app-base:`git rev-parse HEAD` .
+docker build --force-rm --no-cache -f Dockerfile.app -t twashing/edgarly-app:latest -t twashing/edgarly-app:`git rev-parse HEAD` .
 
 lein with-profile +app run -m com.interrupt.edgarly.core/-main
 ```

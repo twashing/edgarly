@@ -2,16 +2,7 @@
   (:require [onyx.test-helper :refer [with-test-env load-config]]
             [onyx.plugin.kafka]
             [onyx.api]
-            #_[franzy.clients.producer.client :as producer]
-            #_[franzy.clients.consumer.client :as consumer]
-            #_[franzy.clients.producer.protocols :refer :all]
-            #_[franzy.clients.consumer.protocols :refer :all]
-            #_[franzy.serialization.serializers :as serializers]
-            #_[franzy.serialization.deserializers :as deserializers]
-            [franzy.admin.zookeeper.client :as client]
-            [franzy.admin.topics :as topics]
-            #_[franzy.clients.producer.defaults :as pd]
-            #_[franzy.clients.consumer.defaults :as cd]
+            
             [com.interrupt.streaming.platform.scanner-command :as psc]
             [com.interrupt.streaming.platform.scanner :as ps]
             [com.interrupt.streaming.platform.filtered-stocks :as pfs]
@@ -33,39 +24,6 @@
 (def topic-scanner "scanner")
 (def topic-filtered-stocks "filtered-stocks")
 (def topic-stock-command "stock-command")
-
-#_(defn one-setup-topics []
-
-  (def zk-utils (client/make-zk-utils {:servers [zookeeper-url]} false))
-  (doseq [topic [topic-scanner-command
-                 topic-scanner
-                 topic-filtered-stocks
-                 topic-stock-command]]
-    (topics/create-topic! zk-utils topic 10))
-
-  (topics/all-topics zk-utils))
-
-#_(defn two-write-to-topic
-  ([topic] (two-write-to-topic topic "a" {:foo :bar}))
-  ([topic k v]
-   (let [;; Use a vector if you wish for multiple servers in your cluster
-         pc {:bootstrap.servers [kafka-url]
-             :group.id          "group.one"}
-
-         ;;Serializes producer record keys that may be keywords
-         string-serializer (serializers/string-serializer)
-
-         ;;Serializes producer record values as EDN, built-in
-         value-serializer (serializers/edn-serializer)
-
-         ;;optionally create some options, even just use the defaults explicitly
-         ;;for those that don't need anything fancy...
-         options (pd/make-default-producer-options)
-         partition 0]
-
-     (with-open [p (producer/make-producer pc string-serializer value-serializer options)]
-       (let [send-fut (send-async! p topic partition k v options)]
-         (println "Async send results:" @send-fut))))))
 
 (defn find-task [catalog task-name]
   (let [matches (filter #(= task-name (:onyx/name %)) catalog)]

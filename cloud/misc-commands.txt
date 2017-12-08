@@ -105,9 +105,9 @@ kafka-topics.sh --list --zookeeper zookeeper:2181
 kafka-topics.sh --describe --zookeeper zookeeper:2181
 kafka-topics.sh --describe --zookeeper zookeeper:2181 --topic scanner-command
 
-kafka-console-producer \
+kafka-console-producer.sh \
   --broker-list kafka:9092 \
-  --topic scanner-command-result \
+  --topic scanner-command \
   --property "parse.key=true" \
   --property "key.separator=,"
 
