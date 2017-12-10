@@ -18,35 +18,32 @@
 
 
 ;; LIFECYCLES
-(def capacity 500)
-(def in-chan (chan capacity))
 (def in-buffer (atom {}))
-(def out-chan (chan capacity))
 
-(defn inject-in-ch [event lifecycle]
+(defn inject-scanner-command-ch [event lifecycle]
   {:core.async/buffer in-buffer
-   :core.async/chan in-chan})
+   :core.async/chan base/chan-scanner-command})
+(defn inject-scanner-command-result-ch [event lifecycle] {:core.async/chan base/chan-scanner-command-result})
+(defn inject-scanner-ch [event lifecycle] {:core.async/chan base/chan-scanner})
 
-(defn inject-out-ch [event lifecycle]
-  {:core.async/chan out-chan})
-
-(def in-calls {:lifecycle/before-task-start inject-in-ch})
-(def out-calls {:lifecycle/before-task-start inject-out-ch})
+(def in-calls-scanner-command {:lifecycle/before-task-start inject-scanner-command-ch})
+(def out-calls-scanner-command-result {:lifecycle/before-task-start inject-scanner-command-result-ch})
+(def out-calls-scanner {:lifecycle/before-task-start inject-scanner-ch})
 
 (defn lifecycles [platform-type]
   ({:kafka []
     :onyx [{:lifecycle/task :scanner-command
-            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/in-calls}
+            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/in-calls-scanner-command}
            {:lifecycle/task :scanner-command
             :lifecycle/calls :onyx.plugin.core-async/reader-calls}
 
            {:lifecycle/task :scanner-command-result
-            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/out-calls}
+            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/out-calls-scanner-command-result}
            {:lifecycle/task :scanner-command-result
             :lifecycle/calls :onyx.plugin.core-async/writer-calls}
 
            {:lifecycle/task :scanner
-            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/out-calls}
+            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/out-calls-scanner}
            {:lifecycle/task :scanner
             :lifecycle/calls :onyx.plugin.core-async/writer-calls}]}
    platform-type))
@@ -144,6 +141,5 @@
 
 (comment
 
-  (>!! in-chan {:foo :bar})
-  (def result (<!! out-chan))
-  )
+  (>!! base/chan-scanner-command {:foo :bar})
+  (def result (<!! base/chan-scanner-command-result)))

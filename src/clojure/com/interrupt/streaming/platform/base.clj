@@ -1,4 +1,28 @@
-(ns com.interrupt.streaming.platform.base)
+(ns com.interrupt.streaming.platform.base
+  (:require [clojure.core.async :refer [chan >!! <!! >! <!]]))
+
+
+(def capacity 500)
+(def chan-scanner-command (chan capacity))
+(def chan-scanner-command-result (chan capacity))
+(def chan-scanner (chan capacity))
+(def chan-filtered-stocks (chan capacity))
+(def chan-predictive-analytics (chan capacity))
+(def chan-historical-command (chan capacity))
+(def chan-historical-command-result (chan capacity))
+(def chan-historical (chan capacity))
+(def chan-trade-command (chan capacity))
+(def chan-trade-command-result (chan capacity))
+(def chan-trade-recommendations (chan capacity))
+(def chan-positions (chan capacity))
+(def chan-start-trading (chan capacity))
+(def chan-start-trading-result (chan capacity))
+(def chan-stop-trading (chan capacity))
+(def chan-stop-trading-result (chan capacity))
+(def chan-stock (chan capacity))
+(def chan-stock-command (chan capacity))
+(def chan-stock-command-result (chan capacity))
+
 
 (defn catalog-basic [zookeeper-url topic-read topic-write
                      {:keys [input-name output-name
