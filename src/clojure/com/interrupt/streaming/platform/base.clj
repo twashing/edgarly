@@ -25,7 +25,7 @@
 (def chan-stock-command-result (chan capacity))
 
 
-(defn catalog-basic [zookeeper-url topic-read topic-write
+#_(defn catalog-basic [zookeeper-url topic-read topic-write
                      {:keys [input-name output-name
                              function-name function-id]}]
   [{:onyx/name input-name

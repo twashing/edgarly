@@ -6,7 +6,7 @@
              [com.interrupt.component.repl-process :refer [repl-process]]
 
              [com.interrupt.component.ewrapper :refer [new-ewrapper]]
-             [com.interrupt.component.onyx :refer [new-onyx]]
+             [com.interrupt.component.service:refer [new-service]]
              [com.interrupt.component.ewrapper-impl :as ei]
              [clojure.string :as str]
              [clojure.core.async :refer [chan >! <! merge go go-loop pub sub unsub-all sliding-buffer]]
