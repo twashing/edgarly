@@ -21,8 +21,8 @@
 
 (defn inject-scanner-ch [event lifecycle]
   {:core.async/buffer in-buffer
-   :core.async/chan base/chan-scanner})
-(defn inject-filtered-stocks-ch [event lifecycle] {:core.async/chan base/chan-filtered-stocks})
+   :core.async/chan @base/chan-scanner})
+(defn inject-filtered-stocks-ch [event lifecycle] {:core.async/chan @base/chan-filtered-stocks})
 
 (def in-calls-scanner {:lifecycle/before-task-start inject-scanner-ch})
 (def out-calls-filtered-stocks {:lifecycle/before-task-start inject-filtered-stocks-ch})
@@ -106,8 +106,8 @@
 
 (comment
 
-  (>!! base/chan-scanner-command {:foo :bar})
-  (def r1 (<!! base/chan-scanner-command-result))
+  (>!! @base/chan-scanner-command {:foo :bar})
+  (def r1 (<!! @base/chan-scanner-command-result))
 
-  (>!! base/chan-scanner {:qwerty :asdf})
-  (def r2 (<!! base/chan-filtered-stocks)))
+  (>!! @base/chan-scanner {:qwerty :asdf})
+  (def r2 (<!! @base/chan-filtered-stocks)))

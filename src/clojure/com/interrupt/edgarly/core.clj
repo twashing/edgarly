@@ -92,7 +92,7 @@
                                           (into #{} scannerids)))]
 
     [scannerids availableids]))
-;; 
+
 (defn next-reqid [scanner-subscriptions]
   (match [scanner-subscriptions]
          [nil] 1
@@ -355,4 +355,7 @@
   (Thread/sleep 5000) ;; a hack, to ensure that the tws machine is available, before we try to connect to it.
   (start-system))
 
-;; (reset)
+(comment
+  (start-system)
+  (reset)
+  (stop))

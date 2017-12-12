@@ -20,11 +20,15 @@
 ;; LIFECYCLES
 (def in-buffer (atom {}))
 
+#_(def chan-scanner-command (atom (chan 500)))
+#_(def chan-scanner-command-result (atom (chan 500)))
+#_(def chan-scanner (atom (chan 500)))
+
 (defn inject-scanner-command-ch [event lifecycle]
   {:core.async/buffer in-buffer
-   :core.async/chan base/chan-scanner-command})
-(defn inject-scanner-command-result-ch [event lifecycle] {:core.async/chan base/chan-scanner-command-result})
-(defn inject-scanner-ch [event lifecycle] {:core.async/chan base/chan-scanner})
+   :core.async/chan @base/chan-scanner-command})
+(defn inject-scanner-command-result-ch [event lifecycle] {:core.async/chan @base/chan-scanner-command-result})
+(defn inject-scanner-ch [event lifecycle] {:core.async/chan @base/chan-scanner})
 
 (def in-calls-scanner-command {:lifecycle/before-task-start inject-scanner-command-ch})
 (def out-calls-scanner-command-result {:lifecycle/before-task-start inject-scanner-command-result-ch})
@@ -141,5 +145,9 @@
 
 (comment
 
-  (>!! base/chan-scanner-command {:foo :bar})
-  (def result (<!! base/chan-scanner-command-result)))
+  (>!! @base/chan-scanner-command {:foo :bar})
+  (def r1 (<!! @base/chan-scanner-command-result))
+  (def r2 (<!! @base/chan-scanner))
+
+  #_(>!! @chan-scanner-command {:foo :bar})
+  #_(def result (<!! @chan-scanner-command-result)))

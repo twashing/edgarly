@@ -21,18 +21,28 @@
   (let [{:keys [zookeeper-url] :as config} (read-config (io/resource config-file-string))
         env-config (assoc (:env-config config) :zookeeper/address zookeeper-url)
         peer-config (assoc (:peer-config config) :zookeeper/address zookeeper-url)
-        env (onyx.api/start-env env-config)
+        ;; env (onyx.api/start-env env-config)
         peer-group (onyx.api/start-peer-group peer-config)
-        peer-count 6
+        peer-count 2
         v-peers (onyx.api/start-peers peer-count peer-group)]
 
     (for [[the-workflow the-lifecycles the-catalog] [[psc/workflow
-                                                      (psc/lifecycles :onyx)
-                                                      (psc/catalog zookeeper-url "scanner-command" :onyx)]
+                                                      (psc/lifecycles :kafka)
+                                                      (psc/catalog zookeeper-url "scanner-command" :kafka)]
 
                                                      [ps/workflow
-                                                      (ps/lifecycles :onyx)
-                                                      (ps/catalog zookeeper-url "scanner" :onyx)]]]
+                                                      (ps/lifecycles :kafka)
+                                                      (ps/catalog zookeeper-url "scanner" :kafka)]
+
+                                                     ;; filtered-stocks
+                                                     ;; predictive-analytics
+                                                     ;; historical-command
+                                                     ;; historical
+                                                     ;; trade-recommendations
+                                                     ;; positions
+                                                     ;; start-trading
+                                                     ;; stop-trading
+                                                     ]]
 
       (do (println "the-catalog: " the-catalog)
           (let [job {:workflow the-workflow

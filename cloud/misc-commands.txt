@@ -105,7 +105,7 @@ kafka-topics.sh --list --zookeeper zookeeper:2181
 kafka-topics.sh --describe --zookeeper zookeeper:2181
 kafka-topics.sh --describe --zookeeper zookeeper:2181 --topic scanner-command
 
-kafka-console-producer.sh \
+kafka-console-producer \
   --broker-list kafka:9092 \
   --topic scanner-command \
   --property "parse.key=true" \
@@ -115,9 +115,9 @@ kafka-console-producer.sh \
 6af3345a-5634-4b41-9762-ce8ad6f6eaa8,{:qwerty :asdf}
 310fcfe4-3cf6-4b8e-9c26-5557634dc6b3,{:thing :amabob}
 
-kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic scanner-command --new-consumer --from-beginning 
-kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic scanner-command-result --new-consumer --from-beginning
-kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command --new-consumer --from-beginning 
+kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command-result --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
 
 
 ssh -i edgarly docker@34.228.13.96

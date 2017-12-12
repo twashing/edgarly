@@ -1,12 +1,13 @@
 (ns com.interrupt.streaming.platform.base
-  (:require [clojure.core.async :refer [chan >!! <!! >! <!]]))
+  (:require [clojure.core.async :refer [chan]]))
 
 
 (def capacity 500)
-(def chan-scanner-command (chan capacity))
-(def chan-scanner-command-result (chan capacity))
-(def chan-scanner (chan capacity))
-(def chan-filtered-stocks (chan capacity))
+(def chan-scanner-command (atom (chan capacity)))
+(def chan-scanner-command-result (atom (chan capacity)))
+(def chan-scanner (atom (chan capacity)))
+(def chan-filtered-stocks (atom (chan capacity)))
+
 (def chan-predictive-analytics (chan capacity))
 (def chan-historical-command (chan capacity))
 (def chan-historical-command-result (chan capacity))
