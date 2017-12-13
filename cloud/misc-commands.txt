@@ -101,9 +101,9 @@ kafka-topics.sh --create \
              --partitions 1 \
              --config cleanup.policy=compact
 
-kafka-topics.sh --list --zookeeper zookeeper:2181
-kafka-topics.sh --describe --zookeeper zookeeper:2181
-kafka-topics.sh --describe --zookeeper zookeeper:2181 --topic scanner-command
+kafka-topics --list --zookeeper zookeeper:2181
+kafka-topics --describe --zookeeper zookeeper:2181
+kafka-topics --describe --zookeeper zookeeper:2181 --topic scanner-command
 
 kafka-console-producer \
   --broker-list kafka:9092 \

@@ -1,8 +1,8 @@
 (ns com.interrupt.streaming.platform
-  (:require [onyx.test-helper :refer [with-test-env load-config]]
-            [onyx.plugin.kafka]
-            [onyx.api]
-            
+  (:require #_[onyx.test-helper :refer [with-test-env load-config]]
+            #_[onyx.plugin.kafka]
+            #_[onyx.api]
+
             [com.interrupt.streaming.platform.scanner-command :as psc]
             [com.interrupt.streaming.platform.scanner :as ps]
             [com.interrupt.streaming.platform.filtered-stocks :as pfs]
@@ -25,14 +25,14 @@
 (def topic-filtered-stocks "filtered-stocks")
 (def topic-stock-command "stock-command")
 
-(defn find-task [catalog task-name]
+#_(defn find-task [catalog task-name]
   (let [matches (filter #(= task-name (:onyx/name %)) catalog)]
     (when-not (seq matches)
       (throw (ex-info (format "Couldn't find task %s in catalog" task-name)
                       {:catalog catalog :task-name task-name})))
     (first matches)))
 
-(defn n-peers
+#_(defn n-peers
   "Takes a workflow and catalog, returns the minimum number of peers
    needed to execute this job."
   [catalog workflow]

@@ -6,7 +6,7 @@
              [com.interrupt.component.repl-process :refer [repl-process]]
 
              [com.interrupt.component.ewrapper :refer [new-ewrapper]]
-             [com.interrupt.component.service:refer [new-service]]
+             [com.interrupt.component.service :refer [new-service]]
              [com.interrupt.component.ewrapper-impl :as ei]
              [clojure.string :as str]
              [clojure.core.async :refer [chan >! <! merge go go-loop pub sub unsub-all sliding-buffer]]
@@ -35,7 +35,8 @@
   (component/system-map
    :nrepl (new-repl-server 5554 "0.0.0.0")
    ;; :ewrapper (new-ewrapper)
-   :onyx (new-onyx)))
+   ;; :onyx (new-onyx)
+   :service (new-service)))
 
 (set-init! #'system-map)
 (defn start-system [] (start))

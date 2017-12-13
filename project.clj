@@ -36,13 +36,13 @@
                  #_[org.apache.kafka/kafka_2.11 "0.11.0.0" :exclusions [org.scala-lang/scala-library
                                                                       org.slf4j/slf4j-log4j12]]
 
-                 [org.onyxplatform/onyx "0.12.0-beta3" :exclusions [org.clojure/tools.reader org.clojure/core.async joda-time
+                 #_[org.onyxplatform/onyx "0.12.0-beta3" :exclusions [org.clojure/tools.reader org.clojure/core.async joda-time
                                                                     prismatic/schema commons-codec]]
-                 [org.onyxplatform/onyx-kafka "0.12.0.0-beta3" :exclusions [log4j org.clojure/tools.reader org.clojure/core.async
+                 #_[org.onyxplatform/onyx-kafka "0.12.0.0-beta3" :exclusions [log4j org.clojure/tools.reader org.clojure/core.async
                                                                             joda-time org.scala-lang/scala-library commons-codec]]
                  [ymilky/franzy "0.0.1"]
                  [ymilky/franzy-transit "0.0.1" :exclusions [commons-codec]]
-                 [ymilky/franzy-admin "0.0.1" :exclusions [log4j]]
+                 #_[ymilky/franzy-admin "0.0.1" :exclusions [log4j]]
 
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [com.rpl/specter "1.0.0"]

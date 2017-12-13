@@ -35,45 +35,6 @@ services:
         max_attempts: 3
         window: 120s
 
-  # zookeeper:
-  #   image: wurstmeister/zookeeper
-  #   ports:
-  #     - 2181:2181
-  # #   deploy:
-  # #     replicas: 2
-  # #     restart_policy:
-  # #       condition: on-failure
-  # #       delay: 5s
-  # #       max_attempts: 3
-  # 
-  # kafka:
-  #   image: wurstmeister/kafka:latest
-  #   ports:
-  #     - target: 9094
-  #       published: 9094
-  #       protocol: tcp
-  #       mode: host
-  #   environment:
-  #     HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"      
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-  #     KAFKA_ADVERTISED_PROTOCOL_NAME: OUTSIDE
-  #     KAFKA_ADVERTISED_PORT: 9094
-  #     KAFKA_PROTOCOL_NAME: INSIDE
-  #     KAFKA_PORT: 9092
-  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   depends_on:
-  #     - zookeeper
-  # #   deploy:
-  # #     replicas: 3
-  # #     restart_policy:
-  # #       condition: on-failure
-  # #       delay: 5s
-  # #       max_attempts: 3
-  # #       window: 120s
-
   tws:
     environment:
       TWSUSERID: fdemo
@@ -94,7 +55,7 @@ services:
       - zookeeper
 
   app:
-    image: twashing/edgarly-app:latest
+    image: twashing/edgarly:latest
     depends_on:
       - tws
       - zookeeper
