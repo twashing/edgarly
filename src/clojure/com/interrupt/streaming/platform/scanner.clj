@@ -60,7 +60,7 @@
    {:kafka {:onyx/medium :kafka
             :onyx/plugin :onyx.plugin.kafka/write-messages
             :kafka/zookeeper zookeeper-url
-            :kafka/topic "filtered-stocks"
+            :kafka/topic "foo"
             :kafka/key-serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-key
             :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
             :kafka/request-size 307200}

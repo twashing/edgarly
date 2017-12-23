@@ -5,7 +5,10 @@
 
 (def workflow
   [[:filtered-stocks :analytics]
-   [:analytics :stock-command]])
+   [:stock :analytics]
+   [:stock-command-result :analytics]
+   [:analytics :stock-command]
+   [:analytics :predictive-analytics]])
 
 (defn lifecycles [platform-type]
   ({:kafka []
@@ -14,12 +17,9 @@
 
 
 ;; CATALOGS
-(defn catalog-configs [zookeeper-url platform-type]
-
+(defn catalog-configs [zookeeper-url]
   (fn [topic]
-
     (cond
-
       (some #{:input-filtered-stocks
               :input-stock
               :input-stock-command-result}
@@ -102,33 +102,34 @@
 
 (defn catalog [zookeeper-url platform-type]
   [(merge input-filtered-stocks
-          (-> (catalog-configs zookeeper-url platform-type)
-              :input-filtered-stocks
+          (-> ((catalog-configs zookeeper-url)
+               :input-filtered-stocks)
               platform-type
               (assoc :kafka/topic "filtered-stocks")))
 
    (merge input-stock
-          (-> (catalog-configs zookeeper-url platform-type)
-              :input-stock
+          (-> ((catalog-configs zookeeper-url)
+               :input-stock)
               platform-type
               (assoc :kafka/topic "stock")))
 
    (merge input-stock-command-result
-          (-> (catalog-configs zookeeper-url platform-type)
-              :input-stock-command-result
+          (-> ((catalog-configs zookeeper-url)
+               :input-stock-command-result)
+              platform-type
               (assoc :kafka/topic "stock-command-result")))
 
    function-analytics
 
    (merge output-stock-command
-          (-> (catalog-configs zookeeper-url platform-type)
-              :output-stock-command
+          (-> ((catalog-configs zookeeper-url)
+               :output-stock-command)
               platform-type
               (assoc :kafka/topic "stock-command")))
 
    (merge output-predictive-analytics
-          (-> (catalog-configs zookeeper-url platform-type)
-              :output-predictive-analytics
+          (-> ((catalog-configs zookeeper-url)
+               :output-predictive-analytics)
               platform-type
               (assoc :kafka/topic "predictive-analytics")))])
 

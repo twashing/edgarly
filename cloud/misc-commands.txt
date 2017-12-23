@@ -114,11 +114,18 @@ kafka-console-producer \
 4b6d8c94-4674-4466-9ee2-872bf1678e78,{:foo :bar}
 6af3345a-5634-4b41-9762-ce8ad6f6eaa8,{:qwerty :asdf}
 310fcfe4-3cf6-4b8e-9c26-5557634dc6b3,{:thing :amabob}
+72dd096b-8d73-4b6e-9095-2730a4f7b077,{:one :two}
+
 
 kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command --new-consumer --from-beginning 
+
 kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command-result --new-consumer --from-beginning
 kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
+
 kafka-console-consumer --bootstrap-server kafka:9092 --topic filtered-stocks --new-consumer --from-beginning
+
+kafka-console-consumer --bootstrap-server kafka:9092 --topic predictive-analytics --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic stock-command --new-consumer --from-beginning
 
 
 ssh -i edgarly docker@34.228.13.96
