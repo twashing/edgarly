@@ -54,13 +54,13 @@
 
 
 ;; CATALOGS
-(defn catalog-configs [zookeeper-url topic-read platform-type]
+(defn catalog-configs [zookeeper-url platform-type]
   {:input-scanner-command
    {:kafka {:onyx/medium :kafka
             :onyx/plugin :onyx.plugin.kafka/read-messages
             :kafka/wrap-with-metadata? true
             :kafka/zookeeper zookeeper-url
-            :kafka/topic topic-read
+            :kafka/topic "foo"
             :kafka/key-deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-key
             :kafka/deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-message
             :kafka/offset-reset :earliest}
@@ -86,7 +86,7 @@
    {:kafka {:onyx/medium :kafka
             :onyx/plugin :onyx.plugin.kafka/write-messages
             :kafka/zookeeper zookeeper-url
-            :kafka/topic "scanner"
+            :kafka/topic "foo"
             :kafka/key-serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-key
             :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
             :kafka/request-size 307200}
@@ -127,21 +127,27 @@
    :onyx/doc "Writes messages to a Kafka topic"})
 
 
-(defn catalog [zookeeper-url topic-read platform-type]
+(defn catalog [zookeeper-url platform-type]
 
   [(merge input-scanner-command
-          (-> (catalog-configs zookeeper-url topic-read platform-type)
-              :input-scanner-command platform-type))
+          (-> (catalog-configs zookeeper-url platform-type)
+              :input-scanner-command
+              platform-type
+              (assoc :kafka/topic "scanner-command")))
 
    function-ibgateway
 
    (merge output-scanner-command-result
-          (-> (catalog-configs zookeeper-url topic-read platform-type)
-              :output-scanner-command-result platform-type))
+          (-> (catalog-configs zookeeper-url platform-type)
+              :output-scanner-command-result
+              platform-type
+              (assoc :kafka/topic "scanner-command-result")))
 
    (merge output-scanner
-          (-> (catalog-configs zookeeper-url topic-read platform-type)
-              :output-scanner platform-type))])
+          (-> (catalog-configs zookeeper-url platform-type)
+              :output-scanner
+              platform-type
+              (assoc :kafka/topic "scanner")))])
 
 (comment
 

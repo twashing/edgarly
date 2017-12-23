@@ -87,11 +87,11 @@ services:
     restart: always
     entrypoint: /usr/local/bin/install-base.sh
 
-  admin:
-    image: twashing/edgarly-admin:latest
-    depends_on:
-      - kafka
-      - zookeeper
+  # admin:
+  #   image: twashing/edgarly-admin:latest
+  #   depends_on:
+  #     - kafka
+  #     - zookeeper
 
   app:
     image: twashing/edgarly-app:latest
@@ -99,7 +99,7 @@ services:
       - tws
       - zookeeper
       - kafka
-      - admin
+  #     - admin
     working_dir: ${PWD}
     shm_size: 1G
     ports:

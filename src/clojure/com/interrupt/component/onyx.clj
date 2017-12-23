@@ -9,6 +9,7 @@
             [com.interrupt.streaming.platform :as pl]
             [com.interrupt.streaming.platform.scanner-command :as psc]
             [com.interrupt.streaming.platform.scanner :as ps]
+            [com.interrupt.streaming.platform.filtered-stocks :as pfs]
             [onyx.test-helper :refer [load-config]]
             [aero.core :refer [read-config]]
 
@@ -27,11 +28,15 @@
 
     (for [[the-workflow the-lifecycles the-catalog] [[psc/workflow
                                                       (psc/lifecycles :kafka)
-                                                      (psc/catalog zookeeper-url "scanner-command" :kafka)]
+                                                      (psc/catalog zookeeper-url :kafka)]
 
                                                      [ps/workflow
                                                       (ps/lifecycles :kafka)
-                                                      (ps/catalog zookeeper-url "scanner" :kafka)]
+                                                      (ps/catalog zookeeper-url :kafka)]
+
+                                                     [pfs/workflow
+                                                      (pfs/lifecycles :kafka)
+                                                      (pfs/catalog zookeeper-url :kafka)]
 
                                                      ;; filtered-stocks
                                                      ;; predictive-analytics

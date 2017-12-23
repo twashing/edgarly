@@ -42,13 +42,13 @@
 
 
 ;; CATALOGS
-(defn catalog-configs [zookeeper-url topic-read platform-type]
+(defn catalog-configs [zookeeper-url]
   {:input-scanner
    {:kafka {:onyx/medium :kafka
             :onyx/plugin :onyx.plugin.kafka/read-messages
             :kafka/wrap-with-metadata? true
             :kafka/zookeeper zookeeper-url
-            :kafka/topic topic-read
+            :kafka/topic "foo"
             :kafka/key-deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-key
             :kafka/deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-message
             :kafka/offset-reset :earliest}
@@ -74,7 +74,7 @@
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/doc "Read from the 'scanner-command' Kafka topic"})
+   :onyx/doc "Read from the 'scanner' Kafka topic"})
 
 (def function-market-scanner
   {:onyx/name :market-scanner
@@ -90,19 +90,23 @@
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/doc "Writes messages to a Kafka topic"})
+   :onyx/doc "Writes messages to the 'filtered-stocks' Kafka topic"})
 
 
-(defn catalog [zookeeper-url topic-read platform-type]
+(defn catalog [zookeeper-url platform-type]
   [(merge input-scanner
-          (-> (catalog-configs zookeeper-url topic-read platform-type)
-              :input-scanner platform-type))
+          (-> (catalog-configs zookeeper-url)
+              :input-scanner
+              platform-type
+              (assoc :kafka/topic "scanner")))
 
    function-market-scanner
 
    (merge output-filtered-stocks
-          (-> (catalog-configs zookeeper-url topic-read platform-type)
-              :output-filtered-stocks platform-type))])
+          (-> (catalog-configs zookeeper-url)
+              :output-filtered-stocks
+              platform-type
+              (assoc :kafka/topic "filtered-stocks")))])
 
 (comment
 
