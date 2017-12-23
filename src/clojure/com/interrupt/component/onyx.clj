@@ -19,20 +19,19 @@
 (defn submit-jobs! [config-file-string]
 
   (let [{:keys [zookeeper-url] :as config} (read-config (io/resource config-file-string))
-        env-config (assoc (:env-config config) :zookeeper/address zookeeper-url)
-        peer-config (assoc (:peer-config config) :zookeeper/address zookeeper-url)
+        ;; env-config (assoc (:env-config config) :zookeeper/address zookeeper-url)
         ;; env (onyx.api/start-env env-config)
-        peer-group (onyx.api/start-peer-group peer-config)
-        peer-count 2
-        v-peers (onyx.api/start-peers peer-count peer-group)]
+
+        peer-config (:peer-config config)
+        peer-group (onyx.api/start-peer-group peer-config)]
 
     (for [[the-workflow the-lifecycles the-catalog] [[psc/workflow
                                                       (psc/lifecycles :kafka)
                                                       (psc/catalog zookeeper-url "scanner-command" :kafka)]
 
-                                                     [ps/workflow
+                                                     #_[ps/workflow
                                                       (ps/lifecycles :kafka)
-                                                      (ps/catalog zookeeper-url "scanner" :kafka)]
+                                                        (ps/catalog zookeeper-url "scanner" :kafka)]
 
                                                      ;; filtered-stocks
                                                      ;; predictive-analytics
@@ -42,9 +41,11 @@
                                                      ;; positions
                                                      ;; start-trading
                                                      ;; stop-trading
-                                                     ]]
+                                                     ]
+          :let [peer-count (->> the-catalog (map :onyx/max-peers) (apply +))]]
 
       (do (println "the-catalog: " the-catalog)
+          (onyx.api/start-peers peer-count peer-group)
           (let [job {:workflow the-workflow
                      :catalog the-catalog
                      :lifecycles the-lifecycles
@@ -52,6 +53,10 @@
                 {:keys [job-id task-ids] :as submitted-job} (onyx.api/submit-job peer-config job)]
 
             submitted-job)))))
+
+(comment
+
+  (onyx.api/job-state "zookeeper:2181" "dev" "0d4c49db-aba8-b94e-de0b-315e11373feb"))
 
 (defrecord Onyx []
   component/Lifecycle

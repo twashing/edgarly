@@ -7,12 +7,12 @@ services:
       - ZOOKEEPER_CLIENT_PORT=2181
     ports:
       - 2181:2181
-    deploy:
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+  #   deploy:
+  #     replicas: 2
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 5s
+  #       max_attempts: 3
   
   kafka:
     image: confluentinc/cp-kafka:3.3.1
@@ -27,13 +27,13 @@ services:
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
     depends_on:
       - zookeeper
-    deploy:
-      replicas: 3
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
+  #   deploy:
+  #     replicas: 3
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 5s
+  #       max_attempts: 3
+  #       window: 120s
 
   # zookeeper:
   #   image: wurstmeister/zookeeper

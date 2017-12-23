@@ -18,8 +18,8 @@
 #_(defn serialize-kafka-key [k] k)
 
 
-(defn deserialize-kafka-key [topic k]
-  (.deserialize string-deserializer topic k))
+(defn deserialize-kafka-key [k]
+  (.deserialize string-deserializer nil k))
 
-(defn serialize-kafka-key [topic k]
-  (.serialize string-serializer topic k))
+(defn serialize-kafka-key [k]
+  (.serialize string-serializer nil k))

@@ -66,4 +66,4 @@
 
 (defn local-identity [segment]
   (println "local-identity segment: " segment)
-  (dissoc segment :topic)) 
+  (dissoc segment :topic))

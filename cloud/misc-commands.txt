@@ -80,30 +80,30 @@ docker-compose exec kafka-tools /bin/bash
 
 
 # kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic test
-kafka-topics.sh --create \
+kafka-topics --create \
              --zookeeper zookeeper:2181 \
              --topic scanner-command \
              --replication-factor 1 \
              --partitions 1 \
              --config cleanup.policy=compact
 
-kafka-topics.sh --create \
+kafka-topics --create \
              --zookeeper zookeeper:2181 \
              --topic scanner-command-result \
              --replication-factor 1 \
              --partitions 1 \
              --config cleanup.policy=compact
 
-kafka-topics.sh --create \
+kafka-topics --create \
              --zookeeper zookeeper:2181 \
              --topic scanner \
              --replication-factor 1 \
              --partitions 1 \
              --config cleanup.policy=compact
 
-kafka-topics.sh --list --zookeeper zookeeper:2181
-kafka-topics.sh --describe --zookeeper zookeeper:2181
-kafka-topics.sh --describe --zookeeper zookeeper:2181 --topic scanner-command
+kafka-topics --list --zookeeper zookeeper:2181
+kafka-topics --describe --zookeeper zookeeper:2181
+kafka-topics --describe --zookeeper zookeeper:2181 --topic scanner-command
 
 kafka-console-producer \
   --broker-list kafka:9092 \
