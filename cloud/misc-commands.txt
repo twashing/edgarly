@@ -118,10 +118,10 @@ kafka-console-producer \
 kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command --new-consumer --from-beginning 
 kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner-command-result --new-consumer --from-beginning
 kafka-console-consumer --bootstrap-server kafka:9092 --topic scanner --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic filtered-stocks --new-consumer --from-beginning
 
 
 ssh -i edgarly docker@34.228.13.96
-
 
 ==
 

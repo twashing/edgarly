@@ -29,9 +29,9 @@
                                                       (psc/lifecycles :kafka)
                                                       (psc/catalog zookeeper-url "scanner-command" :kafka)]
 
-                                                     #_[ps/workflow
+                                                     [ps/workflow
                                                       (ps/lifecycles :kafka)
-                                                        (ps/catalog zookeeper-url "scanner" :kafka)]
+                                                      (ps/catalog zookeeper-url "scanner" :kafka)]
 
                                                      ;; filtered-stocks
                                                      ;; predictive-analytics
@@ -62,9 +62,7 @@
   component/Lifecycle
 
   (start [component]
-
     (println ";; Starting Onyx")
-
     (let [submitted-jobs (submit-jobs! "config.edn")]
       (println ";; Onyx submitted jobs: " submitted-jobs)
       (assoc component :onyx-jobs submitted-jobs)))
