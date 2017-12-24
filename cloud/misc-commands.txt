@@ -127,6 +127,22 @@ kafka-console-consumer --bootstrap-server kafka:9092 --topic filtered-stocks --n
 kafka-console-consumer --bootstrap-server kafka:9092 --topic predictive-analytics --new-consumer --from-beginning
 kafka-console-consumer --bootstrap-server kafka:9092 --topic stock-command --new-consumer --from-beginning
 
+kafka-console-consumer --bootstrap-server kafka:9092 --topic historical --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic historical-command --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic historical-command-result --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic trade-recommendations --new-consumer --from-beginning
+
+kafka-console-consumer --bootstrap-server kafka:9092 --topic trade-command --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic trade-command-result --new-consumer --from-beginning
+
+kafka-console-consumer --bootstrap-server kafka:9092 --topic start-trading --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic start-trading-result --new-consumer --from-beginning
+
+kafka-console-consumer --bootstrap-server kafka:9092 --topic stop-trading --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic stop-trading-result --new-consumer --from-beginning
+kafka-console-consumer --bootstrap-server kafka:9092 --topic positions --new-consumer --from-beginning
+
+
 
 ssh -i edgarly docker@34.228.13.96
 

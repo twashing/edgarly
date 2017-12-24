@@ -10,6 +10,7 @@
             [com.interrupt.streaming.platform.scanner-command :as psc]
             [com.interrupt.streaming.platform.scanner :as ps]
             [com.interrupt.streaming.platform.filtered-stocks :as pfs]
+            [com.interrupt.streaming.platform.predictive-analytics :as ppa]
             [onyx.test-helper :refer [load-config]]
             [aero.core :refer [read-config]]
 
@@ -38,15 +39,10 @@
                                                       (pfs/lifecycles :kafka)
                                                       (pfs/catalog zookeeper-url :kafka)]
 
-                                                     ;; filtered-stocks
-                                                     ;; predictive-analytics
-                                                     ;; historical-command
-                                                     ;; historical
-                                                     ;; trade-recommendations
-                                                     ;; positions
-                                                     ;; start-trading
-                                                     ;; stop-trading
-                                                     ]
+                                                     [ppa/workflow
+                                                      (ppa/lifecycles :kafka)
+                                                      (ppa/catalog zookeeper-url :kafka)]]
+
           :let [peer-count (->> the-catalog (map :onyx/max-peers) (apply +))]]
 
       (do (println "the-catalog: " the-catalog)
