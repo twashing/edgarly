@@ -12,6 +12,8 @@
             [com.interrupt.streaming.platform.filtered-stocks :as pfs]
             [com.interrupt.streaming.platform.predictive-analytics :as ppa]
             [com.interrupt.streaming.platform.trade-recommendations :as ptr]
+            [com.interrupt.streaming.platform.bookeeping :as pbk]
+            [com.interrupt.streaming.platform.edgarly :as ped]
             [onyx.test-helper :refer [load-config]]
             [aero.core :refer [read-config]]
 
@@ -46,7 +48,15 @@
 
                                                      [ptr/workflow
                                                       (ptr/lifecycles :kafka)
-                                                      (ptr/catalog zookeeper-url :kafka)]]
+                                                      (ptr/catalog zookeeper-url :kafka)]
+
+                                                     [pbk/workflow
+                                                      (pbk/lifecycles :kafka)
+                                                      (pbk/catalog zookeeper-url :kafka)]
+
+                                                     [ped/workflow
+                                                      (ped/lifecycles :kafka)
+                                                      (ped/catalog zookeeper-url :kafka)]]
 
           :let [peer-count (->> the-catalog (map :onyx/max-peers) (apply +))]]
 

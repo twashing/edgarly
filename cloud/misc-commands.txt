@@ -150,9 +150,13 @@ ssh -i edgarly docker@34.228.13.96
 
 kafka-console-producer \
   --broker-list kafka:9092 \
-  --topic scanner \
+  --topic positions \
   --property "parse.key=true" \
   --property "key.separator=,"
+
+4b6d8c94-4674-4466-9ee2-872bf1678e78,{:foo :bar}
+6af3345a-5634-4b41-9762-ce8ad6f6eaa8,{:qwerty :asdf}
+310fcfe4-3cf6-4b8e-9c26-5557634dc6b3,{:thing :amabob}
 
 ==
 
