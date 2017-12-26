@@ -1,4 +1,4 @@
-(ns com.interrupt.streaming.platform.scanner
+(ns com.interrupt.streaming.platform.market-scanner
   (:require [clojure.core.async :refer [chan >!! <!! >! <!]]
             [com.interrupt.streaming.platform.base :as base]
             [com.interrupt.streaming.platform.serialization]))

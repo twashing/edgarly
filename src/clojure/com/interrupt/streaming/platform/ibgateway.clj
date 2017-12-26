@@ -1,4 +1,4 @@
-(ns com.interrupt.streaming.platform.scanner-command
+(ns com.interrupt.streaming.platform.ibgateway
   (:require [clojure.core.async :refer [chan >!! <!! >! <!]]
             [com.interrupt.streaming.platform.base :as base]
             [com.interrupt.streaming.platform.serialization]))

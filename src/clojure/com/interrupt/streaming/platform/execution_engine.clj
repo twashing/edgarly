@@ -1,4 +1,4 @@
-(ns com.interrupt.streaming.platform.trade-recommendations
+(ns com.interrupt.streaming.platform.execution-engine
   (:require [com.interrupt.streaming.platform.serialization]))
 
 

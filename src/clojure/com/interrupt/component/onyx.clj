@@ -5,13 +5,12 @@
 
             [franzy.serialization.serializers :as serializers]
             [franzy.serialization.deserializers :as deserializers]
-
             [com.interrupt.streaming.platform :as pl]
-            [com.interrupt.streaming.platform.scanner-command :as psc]
-            [com.interrupt.streaming.platform.scanner :as ps]
-            [com.interrupt.streaming.platform.filtered-stocks :as pfs]
-            [com.interrupt.streaming.platform.predictive-analytics :as ppa]
-            [com.interrupt.streaming.platform.trade-recommendations :as ptr]
+            [com.interrupt.streaming.platform.ibgateway :as pib]
+            [com.interrupt.streaming.platform.market-scanner :as pms]
+            [com.interrupt.streaming.platform.analytics :as pa]
+            [com.interrupt.streaming.platform.clnn :as pcln]
+            [com.interrupt.streaming.platform.execution-engine :as pee]
             [com.interrupt.streaming.platform.bookeeping :as pbk]
             [com.interrupt.streaming.platform.edgarly :as ped]
             [onyx.test-helper :refer [load-config]]
@@ -30,25 +29,25 @@
         peer-config (:peer-config config)
         peer-group (onyx.api/start-peer-group peer-config)]
 
-    (for [[the-workflow the-lifecycles the-catalog] [[psc/workflow
-                                                      (psc/lifecycles :kafka)
-                                                      (psc/catalog zookeeper-url :kafka)]
+    (for [[the-workflow the-lifecycles the-catalog] [[pib/workflow
+                                                      (pib/lifecycles :kafka)
+                                                      (pib/catalog zookeeper-url :kafka)]
 
-                                                     [ps/workflow
-                                                      (ps/lifecycles :kafka)
-                                                      (ps/catalog zookeeper-url :kafka)]
+                                                     [pms/workflow
+                                                      (pms/lifecycles :kafka)
+                                                      (pms/catalog zookeeper-url :kafka)]
 
-                                                     [pfs/workflow
-                                                      (pfs/lifecycles :kafka)
-                                                      (pfs/catalog zookeeper-url :kafka)]
+                                                     [pa/workflow
+                                                      (pa/lifecycles :kafka)
+                                                      (pa/catalog zookeeper-url :kafka)]
 
-                                                     [ppa/workflow
-                                                      (ppa/lifecycles :kafka)
-                                                      (ppa/catalog zookeeper-url :kafka)]
+                                                     [pcln/workflow
+                                                      (pcln/lifecycles :kafka)
+                                                      (pcln/catalog zookeeper-url :kafka)]
 
-                                                     [ptr/workflow
-                                                      (ptr/lifecycles :kafka)
-                                                      (ptr/catalog zookeeper-url :kafka)]
+                                                     [pee/workflow
+                                                      (pee/lifecycles :kafka)
+                                                      (pee/catalog zookeeper-url :kafka)]
 
                                                      [pbk/workflow
                                                       (pbk/lifecycles :kafka)

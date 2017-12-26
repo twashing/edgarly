@@ -1,14 +1,14 @@
-(ns com.interrupt.streaming.platform.predictive-analytics
-  (:require [com.interrupt.streaming.platform.serialization]))
+(ns com.interrupt.streaming.platform.analytics
+  (:require [com.interrupt.streaming.platform.base :as base]
+            [com.interrupt.streaming.platform.serialization]))
 
 
 (def workflow
-  [[:predictive-analytics :clnn]
-   [:filtered-stocks :clnn]
-   [:historical :clnn]
-   [:historical-command-result :clnn]
-   [:clnn :historical-command]
-   [:clnn :trade-recommendations]])
+  [[:filtered-stocks :analytics]
+   [:stock :analytics]
+   [:stock-command-result :analytics]
+   [:analytics :stock-command]
+   [:analytics :predictive-analytics]])
 
 (defn lifecycles [platform-type]
   ({:kafka []
@@ -20,10 +20,9 @@
 (defn catalog-configs [zookeeper-url]
   (fn [topic]
     (cond
-      (some #{:input-predictive-analytics
-              :input-filtered-stocks
-              :input-historical
-              :input-historical-command-result}
+      (some #{:input-filtered-stocks
+              :input-stock
+              :input-stock-command-result}
             [topic])
 
       {:kafka {:onyx/medium :kafka
@@ -38,8 +37,8 @@
        :onyx {:onyx/medium :core.async
               :onyx/plugin :onyx.plugin.core-async/input}}
 
-      (some #{:output-historical-command
-              :output-trade-recommendations}
+      (some #{:output-stock-command
+              :output-predictive-analytics}
             [topic])
 
       {:kafka {:onyx/medium :kafka
@@ -53,14 +52,6 @@
        :onyx {:onyx/medium :core.async
               :onyx/plugin :onyx.plugin.core-async/output}})))
 
-(def input-predictive-analytics
-  {:onyx/name :predictive-analytics
-   :onyx/type :input
-   :onyx/min-peers 1
-   :onyx/max-peers 1
-   :onyx/batch-size 10
-   :onyx/doc "Read from the 'predictive-analytics' Kafka topic"})
-
 (def input-filtered-stocks
   {:onyx/name :filtered-stocks
    :onyx/type :input
@@ -69,82 +60,80 @@
    :onyx/batch-size 10
    :onyx/doc "Read from the 'filtered-stocks' Kafka topic"})
 
-(def input-historical
-  {:onyx/name :historical
+(def input-stock
+  {:onyx/name :stock
    :onyx/type :input
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/doc "Read from the 'historical' Kafka topic"})
+   :onyx/doc "Read from the 'stock' Kafka topic"})
 
-(def input-historical-command-result
-  {:onyx/name :historical-command-result
+(def input-stock-command-result
+  {:onyx/name :stock-command-result
    :onyx/type :input
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/doc "Read from the 'historical-command-result' Kafka topic"})
+   :onyx/doc "Read from the 'stock-command-result' Kafka topic"})
 
-(def function-clnn
-  {:onyx/name :clnn
+(def function-analytics
+  {:onyx/name :analytics
    :onyx/type :function
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
    :onyx/fn :com.interrupt.streaming.platform.base/local-identity})
 
-(def output-historical-command
-  {:onyx/name :historical-command
+(def output-stock-command
+  {:onyx/name :stock-command
    :onyx/type :output
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
    :onyx/doc "Writes messages to a Kafka topic"})
 
-(def output-trade-recommendations
-  {:onyx/name :trade-recommendations
+(def output-predictive-analytics
+  {:onyx/name :predictive-analytics
    :onyx/type :output
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
    :onyx/doc "Writes messages to a Kafka topic"})
-
 
 (defn catalog [zookeeper-url platform-type]
-  [(merge input-predictive-analytics
-          (-> ((catalog-configs zookeeper-url)
-               :input-predictive-analytics)
-              platform-type
-              (assoc :kafka/topic "predictive-analytics")))
-
-   (merge input-filtered-stocks
+  [(merge input-filtered-stocks
           (-> ((catalog-configs zookeeper-url)
                :input-filtered-stocks)
               platform-type
               (assoc :kafka/topic "filtered-stocks")))
 
-   (merge input-historical
+   (merge input-stock
           (-> ((catalog-configs zookeeper-url)
-               :input-historical)
+               :input-stock)
               platform-type
-              (assoc :kafka/topic "historical")))
+              (assoc :kafka/topic "stock")))
 
-   (merge input-historical-command-result
+   (merge input-stock-command-result
           (-> ((catalog-configs zookeeper-url)
-               :input-historical-command-result)
+               :input-stock-command-result)
               platform-type
-              (assoc :kafka/topic "historical-command-result")))
+              (assoc :kafka/topic "stock-command-result")))
 
-   function-clnn
+   function-analytics
 
-   (merge output-historical-command
+   (merge output-stock-command
           (-> ((catalog-configs zookeeper-url)
-               :output-historical-command)
+               :output-stock-command)
               platform-type
-              (assoc :kafka/topic "historical-command")))
+              (assoc :kafka/topic "stock-command")))
 
-   (merge output-trade-recommendations
+   (merge output-predictive-analytics
           (-> ((catalog-configs zookeeper-url)
-               :output-trade-recommendations)
+               :output-predictive-analytics)
               platform-type
-              (assoc :kafka/topic "trade-recommendations")))])
+              (assoc :kafka/topic "predictive-analytics")))])
+
+
+(comment
+
+  (catalog "foo:2181" :kafka))
