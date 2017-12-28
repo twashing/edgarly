@@ -21,7 +21,6 @@ docker service create --name nginx -p 80:80 nginx
 
 ==
 
-
 # https://docs.docker.com/engine/swarm/stack-deploy
 
 
@@ -70,6 +69,14 @@ docker swarm leave --force
 Warning: space is running low in /dev/shm (shm) threshold=167,772,160 usable=58,716,160
 
 Error. Id: -1, Code: 502, Msg: Couldn't connect to TWS. Confirm that "Enable ActiveX and Socket Clients" is enabled and
+
+==
+
+org.apache.zookeeper.ClientCnxn
+org.apache.kafka.clients.consumer.internals.Fetcher
+
+ [org.onyxplatform/onyx "0.12.0" :exclusions [[org.clojure/tools.reader] [org.clojure/core.async] [joda-time] [prismatic/schema] [commons-codec]]]
+   [org.apache.zookeeper/zookeeper "3.4.10" :exclusions [[org.slf4j/slf4j-log4j12]]]
 
 ==
 

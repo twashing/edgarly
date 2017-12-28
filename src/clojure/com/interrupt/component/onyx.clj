@@ -29,41 +29,46 @@
         peer-config (:peer-config config)
         peer-group (onyx.api/start-peer-group peer-config)]
 
-    (for [[the-workflow the-lifecycles the-catalog] [[pib/workflow
-                                                      (pib/lifecycles :kafka)
-                                                      (pib/catalog zookeeper-url :kafka)]
+    (for [[workflow lifecycles catalog
+           windows triggers] [[pib/workflow
+                               (pib/lifecycles :kafka)
+                               (pib/catalog zookeeper-url :kafka)
+                               pib/windows
+                               pib/triggers]
 
-                                                     [pms/workflow
-                                                      (pms/lifecycles :kafka)
-                                                      (pms/catalog zookeeper-url :kafka)]
+                              #_[pms/workflow
+                                 (pms/lifecycles :kafka)
+                                 (pms/catalog zookeeper-url :kafka)]
 
-                                                     [pa/workflow
-                                                      (pa/lifecycles :kafka)
-                                                      (pa/catalog zookeeper-url :kafka)]
+                              #_[pa/workflow
+                                 (pa/lifecycles :kafka)
+                                 (pa/catalog zookeeper-url :kafka)]
 
-                                                     [pcln/workflow
-                                                      (pcln/lifecycles :kafka)
-                                                      (pcln/catalog zookeeper-url :kafka)]
+                              #_[pcln/workflow
+                                 (pcln/lifecycles :kafka)
+                                 (pcln/catalog zookeeper-url :kafka)]
 
-                                                     [pee/workflow
-                                                      (pee/lifecycles :kafka)
-                                                      (pee/catalog zookeeper-url :kafka)]
+                              #_[pee/workflow
+                                 (pee/lifecycles :kafka)
+                                 (pee/catalog zookeeper-url :kafka)]
 
-                                                     [pbk/workflow
-                                                      (pbk/lifecycles :kafka)
-                                                      (pbk/catalog zookeeper-url :kafka)]
+                              #_[pbk/workflow
+                                 (pbk/lifecycles :kafka)
+                                 (pbk/catalog zookeeper-url :kafka)]
 
-                                                     [ped/workflow
-                                                      (ped/lifecycles :kafka)
-                                                      (ped/catalog zookeeper-url :kafka)]]
+                              #_[ped/workflow
+                                 (ped/lifecycles :kafka)
+                                 (ped/catalog zookeeper-url :kafka)]]
 
-          :let [peer-count (->> the-catalog (map :onyx/max-peers) (apply +))]]
+          :let [peer-count (->> catalog (map :onyx/max-peers) (apply +))]]
 
-      (do (println "the-catalog: " the-catalog)
+      (do (println "catalog: " catalog)
           (onyx.api/start-peers peer-count peer-group)
-          (let [job {:workflow the-workflow
-                     :catalog the-catalog
-                     :lifecycles the-lifecycles
+          (let [job {:workflow workflow
+                     :catalog catalog
+                     :lifecycles lifecycles
+                     :windows windows
+                     :triggers triggers
                      :task-scheduler :onyx.task-scheduler/balanced}
                 {:keys [job-id task-ids] :as submitted-job} (onyx.api/submit-job peer-config job)]
 

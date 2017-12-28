@@ -106,6 +106,8 @@ services:
       - 5554:5554
     volumes:
       - .:${PWD}
+    environment:
+      ZOO_LOG4J_PROP: "INFO,ROLLINGFILE"
     entrypoint: lein with-profile +app run -m com.interrupt.edgarly.core/-main
 
   kafka-tools:

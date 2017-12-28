@@ -20,10 +20,6 @@
 ;; LIFECYCLES
 (def in-buffer (atom {}))
 
-#_(def chan-scanner-command (atom (chan 500)))
-#_(def chan-scanner-command-result (atom (chan 500)))
-#_(def chan-scanner (atom (chan 500)))
-
 (defn inject-scanner-command-ch [event lifecycle]
   {:core.async/buffer in-buffer
    :core.async/chan @base/chan-scanner-command})
@@ -51,6 +47,28 @@
            {:lifecycle/task :scanner
             :lifecycle/calls :onyx.plugin.core-async/writer-calls}]}
    platform-type))
+
+
+;; WINDOWS
+(def windows
+  [{:window/id :collect-segments
+    :window/task :ibgateway
+    :window/type :global
+    :window/aggregation :onyx.windowing.aggregation/conj}])
+
+(def triggers
+  [{:trigger/window-id :collect-segments
+    :trigger/id :collect-segments-trigger
+    :trigger/on :onyx.triggers/segment
+    :trigger/threshold [1 :elements]
+    :trigger/sync ::dump-window!}])
+
+
+(def thing (atom []))
+
+(defn dump-window! [event window trigger {:keys [lower-bound upper-bound] :as window-data} state]
+  (swap! thing conj (format "Window extent [%s - %s] contents: %s"
+                           lower-bound upper-bound state)))
 
 
 ;; CATALOGS
@@ -125,7 +143,6 @@
    :onyx/max-peers 1
    :onyx/batch-size 10
    :onyx/doc "Writes messages to a Kafka topic"})
-
 
 (defn catalog [zookeeper-url platform-type]
 
