@@ -54,7 +54,7 @@
   [{:window/id :collect-segments
     :window/task :ibgateway
     :window/type :global
-    :window/aggregation :onyx.windowing.aggregation/conj}])
+    :window/aggregation ::sum}])
 
 (def triggers
   [{:trigger/window-id :collect-segments
@@ -64,11 +64,38 @@
     :trigger/sync ::dump-window!}])
 
 
+;; if open, remain open
+;; if closed, remain closed
+;; otherwise toggle scan
+{:scanner-command :open}
+{:scanner-command :close}
+
+
 (def thing (atom []))
 
 (defn dump-window! [event window trigger {:keys [lower-bound upper-bound] :as window-data} state]
-  (swap! thing conj (format "Window extent [%s - %s] contents: %s"
-                           lower-bound upper-bound state)))
+  (swap! thing conj (format "event[ %s ] / window[ %s ] / trigger[ %s ] / Window extent [%s - %s] / state[ %s ]"
+                            event window trigger lower-bound upper-bound state)))
+
+(defn sum-init-fn [window]
+  0)
+
+(defn sum-aggregation-fn [window segment]
+
+  (println (format "sum-aggregation-fn / window[ %s ] / segment[ %s ]" window segment))
+  (let [k (-> segment :message :age)]
+    {:value k}))
+
+(defn sum-application-fn [window state value]
+
+  (println (format "sum-application-fn / window[ %s ] state[ %s ] value[ %s ]" window state value))
+  (+ state (:value value)))
+
+;; sum aggregation referenced in window definition.
+(def sum
+  {:aggregation/init sum-init-fn
+   :aggregation/create-state-update sum-aggregation-fn
+   :aggregation/apply-state-update sum-application-fn})
 
 
 ;; CATALOGS

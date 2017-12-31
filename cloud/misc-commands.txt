@@ -118,6 +118,11 @@ kafka-console-producer \
   --property "parse.key=true" \
   --property "key.separator=,"
 
+70144dea-cdd1-443d-9e7f-55cc5d0928d7,{:name "John" :age 49}
+dbe61f62-257a-4f00-b85a-6d4c0cca44cd,{:name "Madeline" :age 55}
+8e5998ab-5424-4ccb-9e54-5f3676aaa0b6,{:name "Geoffrey" :age 14}
+3aaf6935-28e4-4e0c-a0ea-373c52f38337,{:name "Tim" :age 22}
+
 4b6d8c94-4674-4466-9ee2-872bf1678e78,{:foo :bar}
 6af3345a-5634-4b41-9762-ce8ad6f6eaa8,{:qwerty :asdf}
 310fcfe4-3cf6-4b8e-9c26-5557634dc6b3,{:thing :amabob}
