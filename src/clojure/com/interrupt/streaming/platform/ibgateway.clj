@@ -67,8 +67,8 @@
 ;; if open, remain open
 ;; if closed, remain closed
 ;; otherwise toggle scan
-{:scanner-command :open}
-{:scanner-command :close}
+{:scanner-command :start}
+{:scanner-command :stop}
 
 
 (def thing (atom []))

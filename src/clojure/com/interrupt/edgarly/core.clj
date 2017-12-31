@@ -30,7 +30,7 @@
   (component/system-map
    :nrepl (new-repl-server 5554 "0.0.0.0")
    :ewrapper (new-ewrapper)
-   #_:onyx #_(new-onyx)))
+   :onyx (new-onyx)))
 
 (set-init! #'system-map)
 (defn start-system [] (start))
@@ -187,7 +187,37 @@
 (comment
 
   ;; TODO
+
+  ;; [ok] tone down onyx logging for these namespaces
+  ;;   org.apache.zookeeper.ClientCnxn
+  ;;   org.apache.kafka.clients.consumer.internals.Fetcher
+
+  ;; Add these to the 'platform/ibgateway' namespace
+  ;; scanner-start ( ei/scanner-subscribe )
+  ;; scanner-stop ( ei/scanner-unsubscribe )
+
+  ;; record connection IDs
+
+  ;; migrate data sink atoms (high-opt-imp-volat, high-opt-imp-volat-over-hist, etc)
+  ;;   > to core.async channels > then to onyx output (mostly kafka)
+
+  ;; CONFIG for
+  ;;   network name of tws
+
+  ;; TESTs for ibgateway
+  ;;   enable core.async onyx transport for services
+  ;;   workbench for data transport in and out of service
+  ;;   workbench for subscribing to tws
   ;;
+  ;;   test if open, remain open
+  ;;   test if closed, remain closed
+  ;;   test start scanning; we capture distinct categories (volatility, etc)
+  ;;   test stop scanning
+  ;;   test toggle scan
+  {:scanner-command :start}
+  {:scanner-command :stop}
+
+
   ;; write (Transit) to Kafka
   ;; read (Transit) from Kafka
   ;; feed to analysis
