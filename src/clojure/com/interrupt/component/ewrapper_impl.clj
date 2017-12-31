@@ -138,7 +138,7 @@
          client (.getClient ewrapperImpl)
          signal (.getSignal ewrapperImpl)
 
-         result (.eConnect client "edgarly_tws_1" 4002 1)
+         result (.eConnect client "tws" 4002 1)
 
          ereader (EReader. client signal)]
 

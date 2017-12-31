@@ -29,8 +29,8 @@
 (defn system-map []
   (component/system-map
    :nrepl (new-repl-server 5554 "0.0.0.0")
-   ;; :ewrapper (new-ewrapper)
-   :onyx (new-onyx)))
+   :ewrapper (new-ewrapper)
+   #_:onyx #_(new-onyx)))
 
 (set-init! #'system-map)
 (defn start-system [] (start))
@@ -157,7 +157,6 @@
     (doseq [{:keys [::reqid ::scan-name ::tag] :as val} scanner-subscriptions
             :let [subscriber (chan)]]
 
-      ;; TODO - replace with kafka + stream processing asap
       (let [scan-var (top-level-scan-item scan-name)
             scan-atom (var-get scan-var)]
         (ei/scanner-subscribe reqid client default-instrument default-location scan-name)
@@ -201,6 +200,8 @@
   (def scanner-subscriptions (scanner-start client publication config))
   (pprint scanner-subscriptions)
 
+
+  ;; HISTORICALDATA
   (def historical-atom (atom {}))
   (def historical-subscriptions (historical-start 4002 client publication historical-atom))
 
@@ -326,13 +327,16 @@
                   intersection-subsets)))
 
   (def or-volatility-volume-price-change
-    (filter (fn [e]
-              (and (> (count (:intersection e)) 1)
-                   (some #{"one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten" "eleven"} (:names e))
-                   #_(or (some #{"one" "two"} (:names e))
-                       (some #{"three" "four" "five" "six" "seven"} (:names e))
-                       (some #{"eight" "nine" "ten" "eleven"} (:names e)))))
-            sorted-intersections))
+
+    (->> (filter (fn [e]
+                   (and (> (count (:intersection e)) 1)
+                        (some #{"one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten" "eleven"} (:names e))
+                        #_(or (some #{"one" "two"} (:names e))
+                              (some #{"three" "four" "five" "six" "seven"} (:names e))
+                              (some #{"eight" "nine" "ten" "eleven"} (:names e)))))
+                 sorted-intersections)
+
+         (sort-by #(count (:names %)))))
 
   (clojure.pprint/pprint intersection-subsets)
   (clojure.pprint/pprint sorted-intersections)

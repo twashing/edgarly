@@ -8,6 +8,7 @@ RUN apt-get update && \
     apt-get install -y \
 	    wget \
 	    unzip \
+      less \
 	    xvfb \
 	    x11vnc \
 	    libwebkit2gtk-4.0-37 \

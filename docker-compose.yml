@@ -1,42 +1,10 @@
 version: '3.3'
 services:
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:3.3.1
-    environment:
-      - ZOOKEEPER_CLIENT_PORT=2181
-    ports:
-      - 2181:2181
-  #   deploy:
-  #     replicas: 2
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 5s
-  #       max_attempts: 3
-  
-  kafka:
-    image: confluentinc/cp-kafka:3.3.1
-    ports:
-      - 9092:9092
-      - 8082:8082
-    environment:
-      - KAFKA_BROKER_ID=0
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
-      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-    depends_on:
-      - zookeeper
-  #   deploy:
-  #     replicas: 3
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 5s
-  #       max_attempts: 3
-  #       window: 120s
-
   # zookeeper:
-  #   image: wurstmeister/zookeeper
+  #   image: confluentinc/cp-zookeeper:3.3.1
+  #   environment:
+  #     - ZOOKEEPER_CLIENT_PORT=2181
   #   ports:
   #     - 2181:2181
   # #   deploy:
@@ -47,23 +15,16 @@ services:
   # #       max_attempts: 3
   # 
   # kafka:
-  #   image: wurstmeister/kafka:latest
+  #   image: confluentinc/cp-kafka:3.3.1
   #   ports:
-  #     - target: 9094
-  #       published: 9094
-  #       protocol: tcp
-  #       mode: host
+  #     - 9092:9092
+  #     - 8082:8082
   #   environment:
-  #     HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"      
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-  #     KAFKA_ADVERTISED_PROTOCOL_NAME: OUTSIDE
-  #     KAFKA_ADVERTISED_PORT: 9094
-  #     KAFKA_PROTOCOL_NAME: INSIDE
-  #     KAFKA_PORT: 9092
-  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - KAFKA_BROKER_ID=0
+  #     - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+  #     - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+  #     - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+  #     - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
   #   depends_on:
   #     - zookeeper
   # #   deploy:
@@ -82,6 +43,7 @@ services:
     image: twashing/edgarly-tws:latest
     ports:
       - 4002:4002  # API
+      - 7497:7497
       - 5900:5900  # VNC
     tty: true
     restart: always
@@ -97,8 +59,8 @@ services:
     image: twashing/edgarly-app:latest
     depends_on:
       - tws
-      - zookeeper
-      - kafka
+  #     - zookeeper
+  #     - kafka
   #     - admin
     working_dir: ${PWD}
     shm_size: 1G
@@ -110,25 +72,23 @@ services:
       ZOO_LOG4J_PROP: "INFO,ROLLINGFILE"
     entrypoint: lein with-profile +app run -m com.interrupt.edgarly.core/-main
 
-  kafka-tools:
-    # image: wurstmeister/kafka:latest
-    image: confluentinc/cp-kafka:3.3.1
-    depends_on:
-      - zookeeper
-      - kafka
-    environment:
-      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"      
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_ADVERTISED_PROTOCOL_NAME: OUTSIDE
-      KAFKA_ADVERTISED_PORT: 9094
-      KAFKA_PROTOCOL_NAME: INSIDE
-      KAFKA_PORT: 9092
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      # - BOOTSTRAP_SERVERS=kafka:9092
-      # - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-  
-    tty: true
-    working_dir: /usr/src/app
-    entrypoint: /bin/bash
-
+  # kafka-tools:
+  #   image: confluentinc/cp-kafka:3.3.1
+  #   depends_on:
+  #     - zookeeper
+  #     - kafka
+  #   environment:
+  #     HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"      
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+  #     KAFKA_ADVERTISED_PROTOCOL_NAME: OUTSIDE
+  #     KAFKA_ADVERTISED_PORT: 9094
+  #     KAFKA_PROTOCOL_NAME: INSIDE
+  #     KAFKA_PORT: 9092
+  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  #     # - BOOTSTRAP_SERVERS=kafka:9092
+  #     # - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+  # 
+  #   tty: true
+  #   working_dir: /usr/src/app
+  #   entrypoint: /bin/bash
