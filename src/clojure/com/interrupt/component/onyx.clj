@@ -14,9 +14,7 @@
             [com.interrupt.streaming.bookeeping :as bk]
             [com.interrupt.streaming.edgarly :as ed]
             [onyx.test-helper :refer [load-config]]
-            [aero.core :refer [read-config]]
-
-            [spyscope.core])
+            [aero.core :refer [read-config]])
   (:import [java.util UUID]))
 
 

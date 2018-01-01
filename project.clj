@@ -21,8 +21,8 @@
                  [com.stuartsierra/component "0.3.2"]
                  [aero "1.1.2"]
                  [compojure "1.5.0" :exclusions [commons-codec]]
-                 [org.danielsz/system "0.4.1-SNAPSHOT"
-                  :exclusions [org.clojure/tools.reader org.clojure/core.async org.clojure/tools.namespace]]
+                 [org.danielsz/system "0.4.1"
+                  :exclusions [org.clojure/tools.reader org.clojure/core.async]]
 
                  [com.interactivebrokers.tws/tws-api "9.72.17-SNAPSHOT"]
                  [org.clojure/core.async "0.3.441" :exclusions [org.clojure/tools.reader]]

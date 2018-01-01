@@ -1,7 +1,9 @@
 (ns com.interrupt.streaming.ibgateway
-  (:require [clojure.core.async :refer [chan >!! <!! >! <!]]
+  (:require [clojure.core.async :refer [chan pub >!! <!! >! <!]]
             [com.interrupt.streaming.platform.base :as base]
-            [com.interrupt.streaming.platform.serialization]))
+            [com.interrupt.streaming.platform.serialization]
+
+            [system.repl]))
 
 
 ;; WORKFLOW
@@ -54,7 +56,7 @@
   [{:window/id :collect-segments
     :window/task :ibgateway
     :window/type :global
-    :window/aggregation ::sum}])
+    :window/aggregation ::scan-aggregation}])
 
 (def triggers
   [{:trigger/window-id :collect-segments
@@ -70,25 +72,72 @@
   (swap! thing conj (format "event[ %s ] / window[ %s ] / trigger[ %s ] / Window extent [%s - %s] / state[ %s ]"
                             event window trigger lower-bound upper-bound state)))
 
-(defn sum-init-fn [window]
+
+;; AGGREGATION & STATE
+(def config
+  {:stocks {:default-instrument "STK"
+            :default-location "STK.US.MAJOR"}
+
+   :scanners [{:scan-name "HIGH_OPT_IMP_VOLAT"
+               :scan-value {}
+               :tag :volatility}
+              {:scan-name "HIGH_OPT_IMP_VOLAT_OVER_HIST"
+               :scan-value {}
+               :tag :volatility}
+              {:scan-name "HOT_BY_VOLUME"
+               :scan-value {}
+               :tag :volume}
+              {:scan-name "TOP_VOLUME_RATE"
+               :scan-value {}
+               :tag :volume}
+              {:scan-name "HOT_BY_OPT_VOLUME"
+               :scan-value {}
+               :tag :volume}
+              {:scan-name "OPT_VOLUME_MOST_ACTIVE"
+               :scan-value {}
+               :tag :volume}
+              {:scan-name "COMBO_MOST_ACTIVE"
+               :scan-value {}
+               :tag :volume}
+              {:scan-name "MOST_ACTIVE_USD"
+               :scan-value {}
+               :tag :price}
+              {:scan-name "HOT_BY_PRICE"
+               :scan-value {}
+               :tag :price}
+              {:scan-name "TOP_PRICE_RANGE"
+               :scan-value {}
+               :tag :price}
+              {:scan-name "HOT_BY_PRICE_RANGE"
+               :scan-value {}
+               :tag :price}]})
+
+(defn scan-init-fn [window]
+
+  #_(def client (-> system.repl/system :ewrapper :ewrapper :client))
+  #_(def publisher (-> system.repl/system :ewrapper :ewrapper :publisher))
+
+  #_(def publication (pub publisher #(:req-id %)))
+  #_(def scanner-subscriptions (tws/scanner-start client publication config))
+
   0)
 
-(defn sum-aggregation-fn [window segment]
+(defn scan-aggregation-fn [window segment]
 
-  (println (format "sum-aggregation-fn / window[ %s ] / segment[ %s ]" window segment))
+  (println (format "scan-aggregation-fn / window[ %s ] / segment[ %s ]" window segment))
   (let [k (-> segment :message :age)]
     {:value k}))
 
-(defn sum-application-fn [window state value]
+(defn scan-application-fn [window state value]
 
-  (println (format "sum-application-fn / window[ %s ] state[ %s ] value[ %s ]" window state value))
+  (println (format "scan-application-fn / window[ %s ] state[ %s ] value[ %s ]" window state value))
   (+ state (:value value)))
 
-;; sum aggregation referenced in window definition.
-(def sum
-  {:aggregation/init sum-init-fn
-   :aggregation/create-state-update sum-aggregation-fn
-   :aggregation/apply-state-update sum-application-fn})
+;; scan-aggregation aggregation referenced in window definition.
+(def scan-aggregation
+  {:aggregation/init scan-init-fn
+   :aggregation/create-state-update scan-aggregation-fn
+   :aggregation/apply-state-update scan-application-fn})
 
 
 ;; CATALOGS
@@ -99,8 +148,8 @@
             :kafka/wrap-with-metadata? true
             :kafka/zookeeper zookeeper-url
             :kafka/topic "foo"
-            :kafka/key-deserializer-fn :com.interrupt.streaming.serialization/deserialize-kafka-key
-            :kafka/deserializer-fn :com.interrupt.streaming.serialization/deserialize-kafka-message
+            :kafka/key-deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-key
+            :kafka/deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-message
             :kafka/offset-reset :earliest}
 
     :onyx {:onyx/medium :core.async
@@ -112,8 +161,8 @@
             :onyx/plugin :onyx.plugin.kafka/write-messages
             :kafka/zookeeper zookeeper-url
             :kafka/topic "scanner-command-result"
-            :kafka/key-serializer-fn :com.interrupt.streaming.serialization/serialize-kafka-key
-            :kafka/serializer-fn :com.interrupt.streaming.serialization/serialize-kafka-message
+            :kafka/key-serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-key
+            :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
             :kafka/request-size 307200}
 
     :onyx {:onyx/medium :core.async
@@ -125,8 +174,8 @@
             :onyx/plugin :onyx.plugin.kafka/write-messages
             :kafka/zookeeper zookeeper-url
             :kafka/topic "foo"
-            :kafka/key-serializer-fn :com.interrupt.streaming.serialization/serialize-kafka-key
-            :kafka/serializer-fn :com.interrupt.streaming.serialization/serialize-kafka-message
+            :kafka/key-serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-key
+            :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
             :kafka/request-size 307200}
 
     :onyx {:onyx/medium :core.async
