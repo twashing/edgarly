@@ -1,7 +1,8 @@
 (ns com.interrupt.component.repl-server
   (:require [com.stuartsierra.component :as component]
             [clojure.tools.nrepl.server :refer [start-server stop-server] :as nrepl]
-            [cider.nrepl :refer [cider-middleware]]))
+            [cider.nrepl :refer [cider-middleware]]
+            [refactor-nrepl.middleware :refer [wrap-refactor]]))
 
 (defrecord ReplServer [port bind]
   component/Lifecycle
@@ -12,7 +13,8 @@
                                  :handler (apply
                                            nrepl/default-handler
                                            #_#'pb/wrap-cljs-repl
-                                           (map resolve cider-middleware)))))
+                                           (conj (map resolve cider-middleware)
+                                                 wrap-refactor)))))
   (stop [{server :server :as component}]
     (when server
       (stop-server server)
