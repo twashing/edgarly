@@ -6,13 +6,13 @@
             [franzy.serialization.serializers :as serializers]
             [franzy.serialization.deserializers :as deserializers]
             [com.interrupt.streaming.platform :as pl]
-            [com.interrupt.streaming.platform.ibgateway :as pib]
-            [com.interrupt.streaming.platform.market-scanner :as pms]
-            [com.interrupt.streaming.platform.analytics :as pa]
-            [com.interrupt.streaming.platform.clnn :as pcln]
-            [com.interrupt.streaming.platform.execution-engine :as pee]
-            [com.interrupt.streaming.platform.bookeeping :as pbk]
-            [com.interrupt.streaming.platform.edgarly :as ped]
+            [com.interrupt.streaming.ibgateway :as ib]
+            [com.interrupt.streaming.market-scanner :as ms]
+            [com.interrupt.streaming.analytics :as an]
+            [com.interrupt.streaming.clnn :as cln]
+            [com.interrupt.streaming.execution-engine :as ee]
+            [com.interrupt.streaming.bookeeping :as bk]
+            [com.interrupt.streaming.edgarly :as ed]
             [onyx.test-helper :refer [load-config]]
             [aero.core :refer [read-config]]
 
@@ -30,35 +30,35 @@
         peer-group (onyx.api/start-peer-group peer-config)]
 
     (for [[workflow lifecycles catalog
-           windows triggers] [[pib/workflow
-                               (pib/lifecycles :kafka)
-                               (pib/catalog zookeeper-url :kafka)
-                               pib/windows
-                               pib/triggers]
+           windows triggers] [[ib/workflow
+                               (ib/lifecycles :kafka)
+                               (ib/catalog zookeeper-url :kafka)
+                               ib/windows
+                               ib/triggers]
 
-                              #_[pms/workflow
-                                 (pms/lifecycles :kafka)
-                                 (pms/catalog zookeeper-url :kafka)]
+                              #_[ms/workflow
+                                 (ms/lifecycles :kafka)
+                                 (ms/catalog zookeeper-url :kafka)]
 
-                              #_[pa/workflow
-                                 (pa/lifecycles :kafka)
-                                 (pa/catalog zookeeper-url :kafka)]
+                              #_[an/workflow
+                                 (an/lifecycles :kafka)
+                                 (an/catalog zookeeper-url :kafka)]
 
-                              #_[pcln/workflow
-                                 (pcln/lifecycles :kafka)
-                                 (pcln/catalog zookeeper-url :kafka)]
+                              #_[cln/workflow
+                                 (cln/lifecycles :kafka)
+                                 (cln/catalog zookeeper-url :kafka)]
 
-                              #_[pee/workflow
-                                 (pee/lifecycles :kafka)
-                                 (pee/catalog zookeeper-url :kafka)]
+                              #_[ee/workflow
+                                 (ee/lifecycles :kafka)
+                                 (ee/catalog zookeeper-url :kafka)]
 
-                              #_[pbk/workflow
-                                 (pbk/lifecycles :kafka)
-                                 (pbk/catalog zookeeper-url :kafka)]
+                              #_[bk/workflow
+                                 (bk/lifecycles :kafka)
+                                 (bk/catalog zookeeper-url :kafka)]
 
-                              #_[ped/workflow
-                                 (ped/lifecycles :kafka)
-                                 (ped/catalog zookeeper-url :kafka)]]
+                              #_[ed/workflow
+                                 (ed/lifecycles :kafka)
+                                 (ed/catalog zookeeper-url :kafka)]]
 
           :let [peer-count (->> catalog (map :onyx/max-peers) (apply +))]]
 

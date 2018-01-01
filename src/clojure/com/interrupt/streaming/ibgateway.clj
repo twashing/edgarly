@@ -1,4 +1,4 @@
-(ns com.interrupt.streaming.platform.ibgateway
+(ns com.interrupt.streaming.ibgateway
   (:require [clojure.core.async :refer [chan >!! <!! >! <!]]
             [com.interrupt.streaming.platform.base :as base]
             [com.interrupt.streaming.platform.serialization]))
@@ -33,17 +33,17 @@
 (defn lifecycles [platform-type]
   ({:kafka []
     :onyx [{:lifecycle/task :scanner-command
-            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/in-calls-scanner-command}
+            :lifecycle/calls :com.interrupt.streaming.ibgateway/in-calls-scanner-command}
            {:lifecycle/task :scanner-command
             :lifecycle/calls :onyx.plugin.core-async/reader-calls}
 
            {:lifecycle/task :scanner-command-result
-            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/out-calls-scanner-command-result}
+            :lifecycle/calls :com.interrupt.streaming.ibgateway/out-calls-scanner-command-result}
            {:lifecycle/task :scanner-command-result
             :lifecycle/calls :onyx.plugin.core-async/writer-calls}
 
            {:lifecycle/task :scanner
-            :lifecycle/calls :com.interrupt.streaming.platform.scanner-command/out-calls-scanner}
+            :lifecycle/calls :com.interrupt.streaming.ibgateway/out-calls-scanner}
            {:lifecycle/task :scanner
             :lifecycle/calls :onyx.plugin.core-async/writer-calls}]}
    platform-type))
@@ -62,13 +62,6 @@
     :trigger/on :onyx.triggers/segment
     :trigger/threshold [1 :elements]
     :trigger/sync ::dump-window!}])
-
-
-;; if open, remain open
-;; if closed, remain closed
-;; otherwise toggle scan
-{:scanner-command :start}
-{:scanner-command :stop}
 
 
 (def thing (atom []))
@@ -106,8 +99,8 @@
             :kafka/wrap-with-metadata? true
             :kafka/zookeeper zookeeper-url
             :kafka/topic "foo"
-            :kafka/key-deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-key
-            :kafka/deserializer-fn :com.interrupt.streaming.platform.serialization/deserialize-kafka-message
+            :kafka/key-deserializer-fn :com.interrupt.streaming.serialization/deserialize-kafka-key
+            :kafka/deserializer-fn :com.interrupt.streaming.serialization/deserialize-kafka-message
             :kafka/offset-reset :earliest}
 
     :onyx {:onyx/medium :core.async
@@ -119,8 +112,8 @@
             :onyx/plugin :onyx.plugin.kafka/write-messages
             :kafka/zookeeper zookeeper-url
             :kafka/topic "scanner-command-result"
-            :kafka/key-serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-key
-            :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
+            :kafka/key-serializer-fn :com.interrupt.streaming.serialization/serialize-kafka-key
+            :kafka/serializer-fn :com.interrupt.streaming.serialization/serialize-kafka-message
             :kafka/request-size 307200}
 
     :onyx {:onyx/medium :core.async
@@ -132,8 +125,8 @@
             :onyx/plugin :onyx.plugin.kafka/write-messages
             :kafka/zookeeper zookeeper-url
             :kafka/topic "foo"
-            :kafka/key-serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-key
-            :kafka/serializer-fn :com.interrupt.streaming.platform.serialization/serialize-kafka-message
+            :kafka/key-serializer-fn :com.interrupt.streaming.serialization/serialize-kafka-key
+            :kafka/serializer-fn :com.interrupt.streaming.serialization/serialize-kafka-message
             :kafka/request-size 307200}
 
     :onyx {:onyx/medium :core.async
@@ -153,7 +146,7 @@
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/fn :com.interrupt.streaming.platform.base/local-identity})
+   :onyx/fn :com.interrupt.streaming.base/local-identity})
 
 (def output-scanner-command-result
   {:onyx/name :scanner-command-result

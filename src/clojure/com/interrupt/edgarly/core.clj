@@ -118,7 +118,6 @@
                         [(_ :guard #(> % 1))] (= 1 (:ret x))
                         :else (pos-int? (:ret x)))))))
 
-;; TODO - replace with kafka + stream processing asap
 (defn top-level-scan-item [scan-name]
   (let [scan-sym #_spy/d (-> scan-name (str/lower-case) (str/replace "_" "-") symbol)]
     (if-let [scan-resolved (resolve scan-sym)]
@@ -188,13 +187,9 @@
 
   ;; TODO
 
-  ;; [ok] tone down onyx logging for these namespaces
-  ;;   org.apache.zookeeper.ClientCnxn
-  ;;   org.apache.kafka.clients.consumer.internals.Fetcher
-
   ;; Add these to the 'platform/ibgateway' namespace
-  ;; scanner-start ( ei/scanner-subscribe )
-  ;; scanner-stop ( ei/scanner-unsubscribe )
+  ;;   scanner-start ( ei/scanner-subscribe )
+  ;;   scanner-stop ( ei/scanner-unsubscribe )
 
   ;; record connection IDs
 

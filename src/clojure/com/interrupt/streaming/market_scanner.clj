@@ -1,4 +1,4 @@
-(ns com.interrupt.streaming.platform.market-scanner
+(ns com.interrupt.streaming.market-scanner
   (:require [clojure.core.async :refer [chan >!! <!! >! <!]]
             [com.interrupt.streaming.platform.base :as base]
             [com.interrupt.streaming.platform.serialization]))
@@ -30,12 +30,12 @@
 (defn lifecycles [platform-type]
   ({:kafka []
     :onyx [{:lifecycle/task :scanner
-            :lifecycle/calls :com.interrupt.streaming.platform.scanner/in-calls-scanner}
+            :lifecycle/calls :com.interrupt.streaming.market-scanner/in-calls-scanner}
            {:lifecycle/task :scanner
             :lifecycle/calls :onyx.plugin.core-async/reader-calls}
 
            {:lifecycle/task :filtered-stocks
-            :lifecycle/calls :com.interrupt.streaming.platform.scanner/out-calls-filtered-stocks}
+            :lifecycle/calls :com.interrupt.streaming.market-scanner/out-calls-filtered-stocks}
            {:lifecycle/task :filtered-stocks
             :lifecycle/calls :onyx.plugin.core-async/writer-calls}]}
    platform-type))

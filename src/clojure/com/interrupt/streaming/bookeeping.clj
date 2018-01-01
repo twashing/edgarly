@@ -1,4 +1,4 @@
-(ns com.interrupt.streaming.platform.bookeeping
+(ns com.interrupt.streaming.bookeeping
   (:require [com.interrupt.streaming.platform.serialization]))
 
 

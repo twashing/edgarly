@@ -1,4 +1,4 @@
-(ns com.interrupt.streaming.platform.execution-engine
+(ns com.interrupt.streaming.execution-engine
   (:require [com.interrupt.streaming.platform.serialization]))
 
 

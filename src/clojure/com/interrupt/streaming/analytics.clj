@@ -1,4 +1,4 @@
-(ns com.interrupt.streaming.platform.analytics
+(ns com.interrupt.streaming.analytics
   (:require [com.interrupt.streaming.platform.base :as base]
             [com.interrupt.streaming.platform.serialization]))
 

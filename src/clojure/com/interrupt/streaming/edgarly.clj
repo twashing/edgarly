@@ -1,14 +1,16 @@
-(ns com.interrupt.streaming.platform.clnn
+(ns com.interrupt.streaming.edgarly
   (:require [com.interrupt.streaming.platform.serialization]))
 
 
 (def workflow
-  [[:predictive-analytics :clnn]
-   [:filtered-stocks :clnn]
-   [:historical :clnn]
-   [:historical-command-result :clnn]
-   [:clnn :historical-command]
-   [:clnn :trade-recommendations]])
+  [[:scanner-command-result :edgarly]
+   [:start-trading :edgarly]
+   [:stop-trading :edgarly]
+   [:positions :edgarly]
+
+   [:edgarly :scanner-command]
+   [:edgarly :start-trading-result]
+   [:edgarly :stop-trading-result]])
 
 (defn lifecycles [platform-type]
   ({:kafka []
@@ -20,10 +22,9 @@
 (defn catalog-configs [zookeeper-url]
   (fn [topic]
     (cond
-      (some #{:input-predictive-analytics
-              :input-filtered-stocks
-              :input-historical
-              :input-historical-command-result}
+      (some #{:scanner-command
+              :start-trading
+              :stop-trading}
             [topic])
 
       {:kafka {:onyx/medium :kafka
@@ -38,8 +39,10 @@
        :onyx {:onyx/medium :core.async
               :onyx/plugin :onyx.plugin.core-async/input}}
 
-      (some #{:output-historical-command
-              :output-trade-recommendations}
+      (some #{:scanner-command-result
+              :start-trading-result
+              :stop-trading-result
+              :positions}
             [topic])
 
       {:kafka {:onyx/medium :kafka
@@ -53,56 +56,64 @@
        :onyx {:onyx/medium :core.async
               :onyx/plugin :onyx.plugin.core-async/output}})))
 
-(def input-predictive-analytics
-  {:onyx/name :predictive-analytics
+(def input-scanner-command-result
+  {:onyx/name :scanner-command-result
    :onyx/type :input
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/doc "Read from the 'predictive-analytics' Kafka topic"})
+   :onyx/doc "Read from the 'scanner-command-result' Kafka topic"})
 
-(def input-filtered-stocks
-  {:onyx/name :filtered-stocks
+(def input-start-trading
+  {:onyx/name :start-trading
    :onyx/type :input
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/doc "Read from the 'filtered-stocks' Kafka topic"})
+   :onyx/doc "Read from the 'start-trading' Kafka topic"})
 
-(def input-historical
-  {:onyx/name :historical
+(def input-stop-trading
+  {:onyx/name :stop-trading
    :onyx/type :input
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/doc "Read from the 'historical' Kafka topic"})
+   :onyx/doc "Read from the 'stop-trading' Kafka topic"})
 
-(def input-historical-command-result
-  {:onyx/name :historical-command-result
+(def input-positions
+  {:onyx/name :positions
    :onyx/type :input
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
-   :onyx/doc "Read from the 'historical-command-result' Kafka topic"})
+   :onyx/doc "Read from the 'positions' Kafka topic"})
 
-(def function-clnn
-  {:onyx/name :clnn
+(def function-bookeeping
+  {:onyx/name :bookeeping
    :onyx/type :function
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
    :onyx/fn :com.interrupt.streaming.platform.base/local-identity})
 
-(def output-historical-command
-  {:onyx/name :historical-command
+(def output-scanner-command
+  {:onyx/name :scanner-command
    :onyx/type :output
    :onyx/min-peers 1
    :onyx/max-peers 1
    :onyx/batch-size 10
    :onyx/doc "Writes messages to a Kafka topic"})
 
-(def output-trade-recommendations
-  {:onyx/name :trade-recommendations
+(def output-start-trading-result
+  {:onyx/name :start-trading-result
+   :onyx/type :output
+   :onyx/min-peers 1
+   :onyx/max-peers 1
+   :onyx/batch-size 10
+   :onyx/doc "Writes messages to a Kafka topic"})
+
+(def output-stop-trading-result
+  {:onyx/name :stop-trading-result
    :onyx/type :output
    :onyx/min-peers 1
    :onyx/max-peers 1
@@ -111,40 +122,46 @@
 
 
 (defn catalog [zookeeper-url platform-type]
-  [(merge input-predictive-analytics
+  [(merge input-scanner-command-result
           (-> ((catalog-configs zookeeper-url)
-               :input-predictive-analytics)
+               :scanner-command-result)
               platform-type
-              (assoc :kafka/topic "predictive-analytics")))
+              (assoc :kafka/topic "scanner-command-result")))
 
-   (merge input-filtered-stocks
+   (merge input-start-trading
           (-> ((catalog-configs zookeeper-url)
-               :input-filtered-stocks)
+               :start-trading)
               platform-type
-              (assoc :kafka/topic "filtered-stocks")))
+              (assoc :kafka/topic "start-trading")))
 
-   (merge input-historical
+   (merge input-stop-trading
           (-> ((catalog-configs zookeeper-url)
-               :input-historical)
+               :stop-trading)
               platform-type
-              (assoc :kafka/topic "historical")))
+              (assoc :kafka/topic "stop-trading")))
 
-   (merge input-historical-command-result
+   (merge input-positions
           (-> ((catalog-configs zookeeper-url)
-               :input-historical-command-result)
+               :positions)
               platform-type
-              (assoc :kafka/topic "historical-command-result")))
+              (assoc :kafka/topic "positions")))
 
-   function-clnn
+   function-bookeeping
 
-   (merge output-historical-command
+   (merge output-scanner-command
           (-> ((catalog-configs zookeeper-url)
-               :output-historical-command)
+               :scanner-command)
               platform-type
-              (assoc :kafka/topic "historical-command")))
+              (assoc :kafka/topic "scanner-command")))
 
-   (merge output-trade-recommendations
+   (merge output-start-trading-result
           (-> ((catalog-configs zookeeper-url)
-               :output-trade-recommendations)
+               :start-trading-result)
               platform-type
-              (assoc :kafka/topic "trade-recommendations")))])
+              (assoc :kafka/topic "start-trading-result")))
+
+   (merge output-stop-trading-result
+          (-> ((catalog-configs zookeeper-url)
+               :stop-trading-result)
+              platform-type
+              (assoc :kafka/topic "stop-trading-result")))])
