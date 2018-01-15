@@ -9,8 +9,7 @@
 ;; WORKFLOW
 (def workflow
   [[:scanner-command :ibgateway]
-   [:ibgateway :scanner-command-result]
-   [:ibgateway :scanner]])
+   [:ibgateway :scanner-command-result]])
 
 (def input-topics
   [(ffirst workflow)])
@@ -112,13 +111,14 @@
                :scan-value {}
                :tag :price}]})
 
+#_(defn local-identity [segment]
+  (println "local-identity segment: " segment)
+  (dissoc segment :topic))
+
 (defn scan-init-fn [window]
 
-  #_(def client (-> system.repl/system :ewrapper :ewrapper :client))
-  #_(def publisher (-> system.repl/system :ewrapper :ewrapper :publisher))
-
-  #_(def publication (pub publisher #(:req-id %)))
-  #_(def scanner-subscriptions (tws/scanner-start client publication config))
+  ;; (def client (-> system.repl/system :ewrapper :ewrapper :client))
+  ;; (def publisher (-> system.repl/system :ewrapper :ewrapper :publisher))
 
   0)
 
@@ -129,6 +129,11 @@
     {:value k}))
 
 (defn scan-application-fn [window state value]
+
+  ;; (def publication (pub publisher #(:req-id %)))
+  ;; sink-channel
+  ;; (def scanner-subscriptions (tws/scanner-start client publication sink-channel config))
+
 
   (println (format "scan-application-fn / window[ %s ] state[ %s ] value[ %s ]" window state value))
   (+ state (:value value)))
